@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"
+        />
+        <title>SXSH</title>
+        <link href="./css/quick-menu.css" rel="stylesheet" />
+        <link href="./css/bootstrap.min.css" rel="stylesheet" />
+        <link href="./css/font-awesome.min.css" rel="stylesheet" />
+        <link rel="shortcut icon" href="./img/hello.ico" type="image/x-icon" />
+
+        <script src="./js/vue.min.js"></script>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/bootstrap.bundle.min.js"></script>
+        <script src="./js/quick-menu.js"></script>
+    </head>
+
+    <body>
+        <div class="container-fluid" id="app">
+            <br />
+            <input
+                id="upload"
+                type="file"
+                @change="importData"
+                style="display: none"
+            />
+            <div class="btn-group btn-block">
+                <button class="btn btn-danger" @click="exportData">导出</button>
+                <button class="btn btn-success" @click="clickUpload">
+                    导入
+                </button>
+                <button class="btn btn-info" @click="recoveryData">恢复</button>
+            </div>
+        </div>
+        <script src="./lib/goods.js"></script>
+        <script src="./lib/common.js"></script>
+        <script src="./lib/quicknav.js"></script>
+        <script>
+            new Vue({
+                el: "#app",
+                data: {
+                    key: "",
+                    list: [],
+                    timer: 0,
+                },
+                created() {},
+                methods: {
+                    download(filename, content) {
+                        const elemA = document.querySelector("a");
+                        elemA.setAttribute("download", filename);
+                        elemA.setAttribute(
+                            "href",
+                            `data:plain/text;charset=UTF-8,${content}`
+                        );
+                        elemA.click();
+                    },
+
+                    exportData() {
+                        const data = localStorage.getItem("goods");
+                        this.download("goods.json", data);
+                    },
+
+                    importData() {
+                        const fileList =
+                            document.querySelector("#upload").files;
+                        if (!fileList.length) {
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.readAsText(fileList[0], "utf8");
+                        reader.onload = () => {
+                            try {
+                                const isJson = JSON.parse(reader.result);
+                                localStorage.setItem("goods", reader.result);
+                                alert("导入成功");
+                            } catch (e) {
+                                console.log(e);
+                                alert("文件不是合法json");
+                            }
+                        };
+                    },
+
+                    clickUpload(obj) {
+                        $("#upload").click();
+                    },
+
+                    recoveryData() {
+                        const r = confirm("确定恢复吗");
+                        if (r) {
+                            localStorage.setItem("goods", goods);
+                        }
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>

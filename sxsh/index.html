@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>SXSH</title>
+    <link href="./css/quick-menu.css" rel="stylesheet">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/font-awesome.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="./img/hello.ico" type="image/x-icon" />
+
+    <script src='./js/vue.min.js'></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/quick-menu.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid" id="app">
+        <div class="input-group mb-3 mt-3">
+            <input class="form-control" @change="search" v-model="key" @focus="key=''" @keypress.enter="search">
+            <div class="input-group-append">
+                <button class="btn btn-info" @click="search">查询</button>
+                <button class="btn btn-danger" @click="clear">清空</button>
+            </div>
+        </div>
+
+        <table class="table table-striped table-responsive w-100" style="white-space: nowrap;">
+            <thead class="thead-dark">
+                <tr>
+                    <th style="width:100px" scope="col">价格</th>
+                    <th style="width:100px" scope="col">规格</th>
+                    <th style="width:120px" scope="col">名称</th>
+                    <th style="width:100px" scope="col">条码</th>
+                    <th style="width:100px" scope="col">拼音</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, idx) in list" :key="idx">
+                    <td class="text-danger">{{item.dPrice}}</td>
+                    <td>{{item.sSpec}}</td>
+                    <td>{{item.sName}}</td>
+                    <td>{{item.sBarCode}}</td>
+                    <td>{{item.sPinyin}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <script src="./lib/goods.js"></script>
+    <script src="./lib/common.js"></script>
+    <script src="./lib/quicknav.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                key: '',
+                list: [],
+                timer: 0,
+
+            },
+            created() {
+                let barcode = '';
+                document.body.addEventListener('keydown', e => {
+                    if (document.activeElement.tagName !== "INPUT") {
+                        if (!this.timer) {
+                            barcode = ''
+                        }
+
+                        if (e.key.length === 1) {
+                            barcode += e.key;
+                        }
+
+                        this.timer = this.debounce(() => {
+                            this.key = barcode;
+                            this.timer = 0;
+
+                            if (e.key === "Enter") {
+                                this.search()
+                            }
+                        }, this.timer)
+                    }
+                });
+                this.loadGoods()
+            },
+            methods: {
+                clear() {
+                    this.key = [];
+                    this.list = [];
+                    this.$forceUpdate();
+                },
+                search() {
+                    if (!this.key) {
+                        this.list = [];
+                        this.$forceUpdate();
+                        return
+                    }
+
+                    if (!isNaN(this.key)) {
+                        this.list = this.goods.filter(i => i.sBarCode.indexOf(this.key) >= 0)
+                    } else {
+                        this.list = this.goods.filter(i => i.sPinyin.toLowerCase().indexOf(this.key.toLowerCase()) >= 0)
+                    }
+
+                    console.log(this.list)
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

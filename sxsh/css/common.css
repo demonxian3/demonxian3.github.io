@@ -1,0 +1,15 @@
+.main {
+    position: relative
+}
+
+.spin-container{
+    background-color:aliceblue;
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    text-align: center;
+    line-height: 60vh;
+}

@@ -43,12 +43,9 @@ $nav = $(`<nav class="navbar navbar-expand-lg navbar-dark bg-info">
             <a class="nav-link" href="create.html">添加</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Pricing</a>
+            <a class="nav-link" href="import.html">导入</a>
         </li>
     </ul>
-    <span class="navbar-text">
-        Navbar text with an inline element
-    </span>
 </div>
 </nav>`)
 $('body').prepend($nav);

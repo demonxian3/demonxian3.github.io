@@ -16,7 +16,7 @@
         <script src="./js/vue.min.js"></script>
         <script src="./js/jquery.min.js"></script>
         <script src="./js/bootstrap.bundle.min.js"></script>
-        <script src="./js/quick-menu.js"></script>
+        <script src="./js/sweetalert2.all.js"></script>
     </head>
 
     <body>
@@ -41,62 +41,62 @@
         <script src="./lib/quicknav.js"></script>
         <script>
             new Vue({
-                el: "#app",
+                el: '#app',
                 data: {
-                    key: "",
+                    key: '',
                     list: [],
                     timer: 0,
                 },
                 created() {},
                 methods: {
                     download(filename, content) {
-                        const elemA = document.querySelector("a");
-                        elemA.setAttribute("download", filename);
+                        const elemA = document.querySelector('a')
+                        elemA.setAttribute('download', filename)
                         elemA.setAttribute(
-                            "href",
-                            `data:plain/text;charset=UTF-8,${content}`
-                        );
-                        elemA.click();
+                            'href',
+                            `data:plain/text;charset=UTF-8,${content}`,
+                        )
+                        elemA.click()
                     },
 
                     exportData() {
-                        const data = localStorage.getItem("goods");
-                        this.download("goods.json", data);
+                        const data = localStorage.getItem('goods')
+                        this.download('goods.json', data)
                     },
 
                     importData() {
-                        const fileList =
-                            document.querySelector("#upload").files;
+                        const fileList = document.querySelector('#upload').files
                         if (!fileList.length) {
-                            return;
+                            return
                         }
 
-                        const reader = new FileReader();
-                        reader.readAsText(fileList[0], "utf8");
+                        const reader = new FileReader()
+                        reader.readAsText(fileList[0], 'utf8')
                         reader.onload = () => {
                             try {
-                                const isJson = JSON.parse(reader.result);
-                                localStorage.setItem("goods", reader.result);
-                                alert("导入成功");
+                                const isJson = JSON.parse(reader.result)
+                                localStorage.setItem('goods', reader.result)
+                                alert('导入成功')
                             } catch (e) {
-                                console.log(e);
-                                alert("文件不是合法json");
+                                console.log(e)
+                                alert('文件不是合法json')
                             }
-                        };
+                        }
                     },
 
                     clickUpload(obj) {
-                        $("#upload").click();
+                        $('#upload').click()
                     },
 
-                    recoveryData() {
-                        const r = confirm("确定恢复吗");
+                    async recoveryData() {
+                        this.toast
+                        const r = await this.toast.confirm('确定恢复吗')
                         if (r) {
-                            localStorage.setItem("goods", goods);
+                            localStorage.setItem('goods', goods)
                         }
                     },
                 },
-            });
+            })
         </script>
     </body>
 </html>

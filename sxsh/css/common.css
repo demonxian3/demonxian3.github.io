@@ -2,8 +2,8 @@
     position: relative
 }
 
-.spin-container{
-    background-color:aliceblue;
+.spin-container {
+    background-color: aliceblue;
     position: absolute;
     bottom: 0;
     top: 0;
@@ -12,4 +12,21 @@
     z-index: 99;
     text-align: center;
     line-height: 60vh;
+}
+
+.inpselect {
+    position: relative;
+}
+
+.inpselect ul {
+    position: absolute;
+    width: 100%;
+    bottom: 40px;
+    z-index: 22;
+    max-height: 14rem;
+    overflow-y: scroll;
+}
+
+.inpselect ul li {
+    padding: .5rem .75rem;
 }

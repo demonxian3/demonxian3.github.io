@@ -1,255 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"
+        />
+        <title>SXSH</title>
+        <link href="./css/quick-menu.css" rel="stylesheet" />
+        <link href="./css/common.css" rel="stylesheet" />
+        <link href="./css/bootstrap.min.css" rel="stylesheet" />
+        <link href="./css/font-awesome.min.css" rel="stylesheet" />
+        <!-- <link href="./css/sweetalert2.min.css" rel="stylesheet" /> -->
+        <link rel="shortcut icon" href="./img/hello.ico" type="image/x-icon" />
+        <script src="./js/vue.min.js"></script>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/bootstrap.bundle.min.js"></script>
+        <script src="./js/pinyin.js"></script>
+        <script src="./js/moment.js"></script>
+        <script src="./js/input-select.js"></script>
+        <script src="./js/sweetalert2.all.js"></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
-    <title>SXSH</title>
-    <link href="./css/quick-menu.css" rel="stylesheet">
-    <link href="./css/common.css" rel="stylesheet">
-    <link href="./css/bootstrap.min.css" rel="stylesheet">
-    <link href="./css/font-awesome.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="./img/hello.ico" type="image/x-icon" />
-    <script src='./js/vue.min.js'></script>
-    <script src="./js/jquery.min.js"></script>
-    <script src="./js/bootstrap.bundle.min.js"></script>
-    <script src="./js/quick-menu.js"></script>
-    <script src="./js/pinyin.js"></script>
-    <script src="./js/moment.js"></script>
-</head>
-
-<body>
-    <div class="container-fluid mt-3" id="app">
-        <div class="alert alert-success" v-show="showSuccess">
-            保存成功
-        </div>
-        <div class="text-right">
-            <span v-if="fromStorage" class="badge badge-success ">storage</span>
-            <span v-else class="badge badge-primary ">unstorage</span>
-        </div>
-
-        <div class="main">
-            <div class="spin-container" v-show="showSpinner">
-                <div class="spinner-grow text-info spin">
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div class="spinner-grow text-info spin">
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div class="spinner-grow text-info spin">
-                    <span class="sr-only">Loading...</span>
-                </div>
+    <body>
+        <div class="container-fluid mt-3" id="app">
+            <div class="text-right">
+                <span v-if="fromStorage" class="badge badge-success"
+                    >storage</span
+                >
+                <span v-else class="badge badge-primary">unstorage</span>
             </div>
 
-            <form>
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">条码</label>
-                    <div class="col-sm-10">
-                        <div class="input-group">
-                            <input class="form-control" @focus="barcode = ''" @keypress.enter="queryBarcode"
-                                @blur="queryBarcode" v-model="barcode">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-success" type="button" @click="barcode=bakBarcode">
-                                    <i class="fa fa-mail-reply"></i>
-                                </button>
-                            </div>
-                        </div>
-
+            <div class="main">
+                <div class="spin-container" v-show="showSpinner">
+                    <div class="spinner-grow text-info spin">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-info spin">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-info spin">
+                        <span class="sr-only">Loading...</span>
                     </div>
                 </div>
 
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">名称</label>
-                    <div class="col-sm-10">
-                        <input class="form-control" v-model="name">
-                    </div>
-                </div>
-
-
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">拼音</label>
-                    <div class="col-sm-10">
-                        <input class="form-control" v-model="pinyin">
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">规格</label>
-                    <div class="col-sm-10">
-                        <input class="form-control" v-model="standard">
-                    </div>
-                </div>
-
-
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">价格</label>
-                    <div class="col-sm-10">
-                        <div class="input-group">
-                            <input class="form-control" v-model="price" @focus="price=''">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-info" type="button" @click="price = +price + 1">
-                                    +1
-                                </button>
-                                <button class="btn btn-outline-info" type="button" @click="price -= 1">
-                                    -1
-                                </button>
-                                <button class="btn btn-outline-info" type="button" @click="price = +price + .5">
-                                    +.5
-                                </button>
-                                <button class="btn btn-outline-info" type="button" @click="price -= .5">
-                                    -.5
-                                </button>
+                <form>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">条码</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input
+                                    class="form-control"
+                                    @focus="barcode = ''"
+                                    @keypress.enter="queryBarcode"
+                                    @blur="queryBarcode"
+                                    v-model="barcode"
+                                />
+                                <div class="input-group-append">
+                                    <button
+                                        class="btn btn-outline-success"
+                                        type="button"
+                                        @click="barcode=bakBarcode"
+                                    >
+                                        <i class="fa fa-mail-reply"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </form>
-            <button class="btn btn-info  btn-block" @click="saveGoods">添加</button>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">名称</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" v-model="name" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">拼音</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" v-model="pinyin" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">规格</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" v-model="standard" />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">价格</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input
+                                    class="form-control"
+                                    v-model="price"
+                                    @focus="price=''"
+                                />
+                                <div class="input-group-append">
+                                    <button
+                                        class="btn btn-outline-info"
+                                        type="button"
+                                        @click="price = +price + 1"
+                                    >
+                                        +1
+                                    </button>
+                                    <button
+                                        class="btn btn-outline-info"
+                                        type="button"
+                                        @click="price -= 1"
+                                    >
+                                        -1
+                                    </button>
+                                    <button
+                                        class="btn btn-outline-info"
+                                        type="button"
+                                        @click="price = +price + .5"
+                                    >
+                                        +.5
+                                    </button>
+                                    <button
+                                        class="btn btn-outline-info"
+                                        type="button"
+                                        @click="price -= .5"
+                                    >
+                                        -.5
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">类型</label>
+
+                        <div class="col-sm-10">
+                            <v-input-select
+                                :typelist="typeList"
+                                v-model="type"
+                            />
+                        </div>
+                    </div>
+                </form>
+                <button class="btn btn-info btn-block" @click="saveGoods">
+                    添加
+                </button>
+            </div>
         </div>
-
-
-
-
-    </div>
-    <script src="./lib/goods.js"></script>
-    <script src="./lib/common.js"></script>
-    <script src="./lib/quicknav.js"></script>
-    <script>
-        new Vue({
-            el: '#app',
-            data: {
-                showSuccess: false,
-                showSpinner: false,
-                barcode: '',
-                name: '',
-                standard: '',
-                pinyin: '',
-                list: [],
-                timer: 0,
-                price: '',
-                fromStorage: false,
-                bakBarcode: '',
-            },
-            created() {
-                let barcode = '';
-                document.body.addEventListener('keydown', e => {
-                    if (document.activeElement.tagName !== "INPUT") {
-                        if (!this.timer) {
-                            barcode = ''
-                        }
-
-                        if (e.key.length === 1) {
-                            barcode += e.key;
-                        }
-
-                        this.timer = this.debounce(() => {
-                            this.barcode = barcode;
-                            this.timer = 0;
-
-                            if (e.key === "Enter") {
-                                this.queryBarcode()
-                            }
-                        }, this.timer)
-                    }
-                });
-                this.loadGoods()
-            },
-            watch: {
-                name: function () {
-                    this.pinyin = pyutils.chineseToFirstLetter(this.name)
-                }
-            },
-            methods: {
-                makePinyin() {
-                    if (!this.name) {
-                        return
-                    }
-
-                    this.pinyin = this.chineseToFirstLetter(this.name)
+        <script src="./lib/goods.js"></script>
+        <script src="./lib/common.js"></script>
+        <script src="./lib/quicknav.js"></script>
+        <script>
+            new Vue({
+                el: '#app',
+                data: {
+                    showSpinner: false,
+                    barcode: '',
+                    name: '',
+                    type: '',
+                    standard: '',
+                    pinyin: '',
+                    list: [],
+                    timer: 0,
+                    price: '',
+                    fromStorage: false,
+                    bakBarcode: '',
+                    typeList: [],
                 },
-                clear() {
-                    this.barcode = "";
-                    this.list = [];
-                    this.$forceUpdate();
-                },
-
-                queryBarcode() {
-                    if (!this.barcode) {
-                        return;
-                    }
-
-                    this.name = '';
-                    this.price = 0.00;
-                    this.pinyin = '';
-                    this.standard = '';
-                    this.bakBarcode = this.barcode;
-                    this.fromStorage = false;
-
-                    // 如果在 localStorage,优先返回
-                    if (fetchGoods = this.goods.find(i => i.sBarCode == this.barcode)) {
-                        this.name = fetchGoods.sName
-                        this.price = fetchGoods.dPrice
-                        this.pinyin = fetchGoods.sPinyin
-                        this.standard = fetchGoods.sSpec
-                        this.barcode = fetchGoods.sBarCode;
-                        this.fromStorage = true;
-                        return;
-                    }
-
-                    this.showSpinner = true;
-                    $.ajax({
-                        url: `https://www.mxnzp.com/api/barcode/goods/details?app_id=heiusbhvtiqerkkq&app_secret=Uy9leklYb1VPSyttK0xMYkNQVlpNUT09&barcode=${this.barcode}`,
-                        type: 'GET',
-                        async: true,
-                        complete: (xhr, data) => {
-                            this.showSpinner = false;
-                            if (xhr?.responseJSON?.code === 1) {
-                                const { barcode, goodsName, price, standard } = xhr.responseJSON.data;
-                                this.name = goodsName;
-                                this.price = price;
-                                this.standard = standard;
-                                this.barcode = barcode;
+                created() {
+                    let barcode = ''
+                    document.body.addEventListener('keydown', (e) => {
+                        if (document.activeElement.tagName !== 'INPUT') {
+                            if (!this.timer) {
+                                barcode = ''
                             }
-                        },
+
+                            if (e.key.length === 1) {
+                                barcode += e.key
+                            }
+
+                            this.timer = this.debounce(() => {
+                                this.barcode = barcode
+                                this.timer = 0
+
+                                if (e.key === 'Enter') {
+                                    this.queryBarcode()
+                                }
+                            }, this.timer)
+                        }
                     })
+                    this.loadGoods()
+                    this.typeList = this.getTypeList()
+                    this.showTypeList = this.typeList.slice()
                 },
-
-                saveGoods() {
-                    const newGoods = {
-                        dCost: this.price,
-                        dPrice: this.price,
-                        dVip: this.price,
-                        dtCreateTime: moment().format('YYYY-MM-DD hh:mm:ss'),
-                        dtUpdateTime: moment().format('YYYY-MM-DD hh:mm:ss'),
-                        iPricing: "0",
-                        iStatus: "1",
-                        id: null,
-                        sBarCode: this.barcode,
-                        sName: this.name,
-                        sPinyin: this.pinyin,
-                        sSpec: this.standard,
-                        sType: "",
-                    }
-
-                    const oldGoods = this.goods.find(i => i.sBarCode == this.barcode)
-
-                    if (!oldGoods) {
-                        this.goods.push(newGoods)
-                    } else {
-                        Object.assign(oldGoods, newGoods);
-                    }
-
-                    localStorage.setItem('goods', JSON.stringify(this.goods));
-                    this.fromStorage = true;
-                    this.showSuccess = true;
-                    setTimeout(() => { this.showSuccess = false }, 1000)
+                watch: {
+                    name: function () {
+                        this.pinyin = pyutils.chineseToFirstLetter(this.name)
+                    },
                 },
+                methods: {
+                    makePinyin() {
+                        if (!this.name) {
+                            return
+                        }
 
+                        this.pinyin = this.chineseToFirstLetter(this.name)
+                    },
+                    clear() {
+                        this.barcode = ''
+                        this.list = []
+                        this.$forceUpdate()
+                    },
+                    queryBarcode() {
+                        if (!this.barcode) {
+                            return
+                        }
 
-            }
-        })
-    </script>
-</body>
+                        this.name = ''
+                        this.price = 0.0
+                        this.pinyin = ''
+                        this.standard = ''
+                        this.bakBarcode = this.barcode
+                        this.fromStorage = false
 
+                        // 如果在 localStorage,优先返回
+                        if (
+                            (fetchGoods = this.goods.find(
+                                (i) => i.sBarCode == this.barcode,
+                            ))
+                        ) {
+                            this.name = fetchGoods.sName
+                            this.price = fetchGoods.dPrice
+                            this.pinyin = fetchGoods.sPinyin
+                            this.standard = fetchGoods.sSpec
+                            this.type = fetchGoods.sType
+                            this.barcode = fetchGoods.sBarCode
+                            this.fromStorage = true
+                            return
+                        }
+
+                        this.showSpinner = true
+                        $.ajax({
+                            url: `https://www.mxnzp.com/api/barcode/goods/details?app_id=heiusbhvtiqerkkq&app_secret=Uy9leklYb1VPSyttK0xMYkNQVlpNUT09&barcode=${this.barcode}`,
+                            type: 'GET',
+                            async: true,
+                            complete: (xhr, data) => {
+                                this.showSpinner = false
+                                if (xhr?.responseJSON?.code === 1) {
+                                    const {
+                                        barcode,
+                                        goodsName,
+                                        price,
+                                        standard,
+                                    } = xhr.responseJSON.data
+                                    this.name = goodsName
+                                    this.price = price
+                                    this.standard = standard
+                                    this.barcode = barcode
+                                }
+                            },
+                        })
+                    },
+                    saveGoods() {
+                        const newGoods = {
+                            dCost: this.price,
+                            dPrice: this.price,
+                            dVip: this.price,
+                            dtCreateTime: moment().format(
+                                'YYYY-MM-DD hh:mm:ss',
+                            ),
+                            dtUpdateTime: moment().format(
+                                'YYYY-MM-DD hh:mm:ss',
+                            ),
+                            iPricing: '0',
+                            iStatus: '1',
+                            id: null,
+                            sBarCode: this.barcode,
+                            sName: this.name,
+                            sPinyin: this.pinyin,
+                            sSpec: this.standard,
+                            sType: this.type,
+                        }
+
+                        if (!newGoods.sBarCode || !newGoods.sName) {
+                            this.toast.warning('商品条码或名称不能为空')
+                            return
+                        }
+
+                        const oldGoods = this.goods.find(
+                            (i) => i.sBarCode == this.barcode,
+                        )
+
+                        if (!oldGoods) {
+                            this.goods.push(newGoods)
+                        } else {
+                            Object.assign(oldGoods, newGoods)
+                        }
+                        localStorage.setItem(
+                            'goods',
+                            JSON.stringify(this.goods),
+                        )
+                        this.fromStorage = true
+                        this.toast.success('保存成功')
+                    },
+                    showSelection(e) {
+                        console.log(e)
+                    },
+                    hideSelection() {
+                        $('.inpselect ul').hide()
+                    },
+                },
+            })
+        </script>
+    </body>
 </html>

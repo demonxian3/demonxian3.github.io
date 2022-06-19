@@ -27,8 +27,6 @@ Vue.use({
                             good.sType = '无分类'
                         }
                     })
-
-                    console.log(this.goods)
                 },
 
                 getTypeList(goods = null) {
@@ -108,6 +106,9 @@ Vue.use({
 $nav = $(`<nav class="navbar navbar-dark bg-info">
 <a class="navbar-brand" href="index.html">盛兴商店</a>
 <ul class="navbar-nav mr-auto d-flex" style="flex-direction: row">
+    <li class="nav-item mr-3" >
+        <a class="nav-link pb-1" href="cashier.html">收银</a>
+    </li>
     <li class="nav-item mr-3" >
         <a class="nav-link pb-1" href="index.html">查询</a>
     </li>

@@ -28,6 +28,7 @@
                 @change="importData"
                 style="display: none"
             />
+
             <div class="btn-group btn-block">
                 <button class="btn btn-danger" @click="exportData">导出</button>
                 <button class="btn btn-success" @click="clickUpload">
@@ -35,6 +36,13 @@
                 </button>
                 <button class="btn btn-info" @click="recoveryData">恢复</button>
             </div>
+            <hr />
+            <h5 class="text-primary">
+                当前存储的数据共 {{this.goods.length}}条
+            </h5>
+            <h5 class="text-info">
+                当前静态的数据共 {{window.goods.length}}条
+            </h5>
         </div>
         <script src="./lib/goods.js"></script>
         <script src="./lib/common.js"></script>
@@ -47,7 +55,11 @@
                     list: [],
                     timer: 0,
                 },
-                created() {},
+                created() {
+                    this.loadGoods()
+                    console.log(Object.keys(window.goods).length)
+                    console.log(Object.keys(this.goods).length)
+                },
                 methods: {
                     download(filename, content) {
                         const elemA = document.querySelector('a')
@@ -61,7 +73,7 @@
 
                     exportData() {
                         const data = localStorage.getItem('goods')
-                        this.download('goods.json', data)
+                        this.download('goods.js', 'var%20goods%20=%20' + data)
                     },
 
                     importData() {

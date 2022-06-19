@@ -16,6 +16,8 @@
         <script src="./js/vue.min.js"></script>
         <script src="./js/jquery.min.js"></script>
         <script src="./js/bootstrap.bundle.min.js"></script>
+        <script src="./js/sweetalert2.all.js"></script>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css"> -->
         <!-- <script src="./js/quick-menu.js"></script> -->
     </head>
 
@@ -69,6 +71,7 @@
                         <th style="width: 100px" scope="col">规格</th>
                         <th style="width: 100px" scope="col">条码</th>
                         <th style="width: 100px" scope="col">拼音</th>
+                        <th style="width: 100px" scope="col">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,6 +81,15 @@
                         <td>{{item.sSpec}}</td>
                         <td>{{item.sBarCode}}</td>
                         <td>{{item.sPinyin}}</td>
+                        <td>
+                            <span class="btn-link">编辑</span>
+                            <i class="bi bi-trash"></i>
+                            <span
+                                class="btn-link mr-2 trash"
+                                @click="dropGoods(item)"
+                                >删除</span
+                            >
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -187,6 +199,28 @@
                         }
 
                         this.$forceUpdate()
+                    },
+                    async dropGoods(item) {
+                        let res = await Swal.fire({
+                            title: `<strong>确定删除【${item.sName}】商品吗 ? </strong>`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            cancelButtonText: '取消',
+                            confirmButtonText: '确认',
+                        })
+
+                        if (res.isConfirmed) {
+                            let idx = this.goods.findIndex(g => g.sBarCode === item.sBarCode)
+                            this.goods.splice(idx, 1);
+                            this.search()
+                            localStorage.setItem('goods', JSON.stringify(this.goods))
+                            Swal.fire({
+                                icon: 'success',
+                                title: '删除成功',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
                     },
                 },
             })

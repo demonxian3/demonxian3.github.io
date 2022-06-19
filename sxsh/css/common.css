@@ -18,7 +18,7 @@
     position: relative;
 }
 
-.inpselect ul {
+.inpselect-box {
     position: absolute;
     width: 100%;
     bottom: 40px;
@@ -27,6 +27,7 @@
     overflow-y: scroll;
 }
 
-.inpselect ul li {
+.inpselect-box li {
     padding: .5rem .75rem;
 }
+

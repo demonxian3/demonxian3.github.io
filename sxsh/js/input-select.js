@@ -1,16 +1,31 @@
 Vue.component('v-input-select', {
     template: `
         <div class="inpselect" ref="inpSelect">
-            <ul class="list-group border d-none" ref="ul">
-                <li
-                    :key="type"
-                    v-for="type in showTypeList"
-                    class="list-group-item-info list-group-item list-group-item-action"
-                    @click="clickSelection($event.target.innerText)"
-                >
-                    {{type}}
-                </li>
-            </ul>
+            <template v-if="mode === 'select'">
+                <ul class="list-group border d-none inpselect-box" ref="ul" >
+                    <li
+                        :key="type"
+                        v-for="type in showTypeList"
+                        class="list-group-item-info list-group-item list-group-item-action"
+                        @click="clickSelection($event.target.innerText)"
+                    >
+                        {{type}}
+                    </li>
+                </ul>
+            </template>
+            <template v-else>
+                <div class="border d-none inpselect-box bg-white" ref="ul" >
+                    <button 
+                        v-for="type in showTypeList" 
+                        class="btn btn-outline-info m-2"
+                        :class="{active: value===type}"
+                        @click.stop="clickSelection($event.target.innerText)"
+                    >
+                        {{type}}
+                    </button>
+                </div>
+            </template>
+
             <input
                 @focus="showSelection"
                 @input="handleInput($event.target.value)"
@@ -28,6 +43,10 @@ Vue.component('v-input-select', {
         value: {
             type: String,
             required: true,
+        },
+        mode: {
+            type: String,
+            default: 'select',
         },
     },
     data() {

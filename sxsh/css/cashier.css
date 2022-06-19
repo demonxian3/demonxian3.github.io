@@ -1,0 +1,35 @@
+#cashier .bottom-panel {
+    height: 150px;
+}
+
+#cashier .panel-head {
+    height: 50px;
+}
+
+.panel-title {
+    width: 25%;
+    font-size: 20px;
+    letter-spacing: 5px;
+    font-family: cursive;
+}
+
+#cashier .panel-foot {
+    height: 100px;
+}
+
+.panel-left {
+    width: 32%;
+}
+
+.panel-right {
+    width: 30%;
+}
+
+.panel-price {
+    font-size: 32px;
+}
+
+kbd {
+    font-size: 12px;
+    background-color: inherit;
+}

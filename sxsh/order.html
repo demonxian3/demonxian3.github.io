@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"
+        />
+        <title>SXSH</title>
+        <link href="./css/quick-menu.css" rel="stylesheet" />
+        <link href="./css/bootstrap.min.css" rel="stylesheet" />
+        <link href="./css/font-awesome.min.css" rel="stylesheet" />
+        <link href="./css/order.css" rel="stylesheet" />
+        <link rel="shortcut icon" href="./img/hello.ico" type="image/x-icon" />
+
+        <script src="./js/vue.min.js"></script>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/bootstrap.bundle.min.js"></script>
+        <script src="./js/sweetalert2.all.js"></script>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css"> -->
+        <!-- <script src="./js/quick-menu.js"></script> -->
+    </head>
+
+    <body>
+        <div class="d-flex" id="order">
+            <div style="width: 20%; height: 93vh">
+                <input
+                    class="form-control"
+                    v-model="filter.keyword"
+                    @change="search"
+                    placeholder="搜索"
+                />
+
+                <div class="list-group border" style="height: 94%;overflow-y: scroll;">
+                    <span
+                        class="list-group-item list-group-item-action"
+                        v-for="(item,idx) in order"
+                        :key="idx"
+                        :class="{'list-group-item-info': currentOrderId == item.id}"
+                        @click="currentOrderId = item.id"
+                    >
+                        <h5 class="mb-1 text-primary">{{item.id}}</h5>
+                        <small class="font-weight-bold text-info">{{item.createTime}}</small>
+                        <div>
+                            共 {{getTotalCount(item.id)}} 件商品
+                            <span class="text-danger">{{getTotalPrice(item.id)}}</span>&nbsp;元
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div style="width: 80%; height: 93vh" class="p-1 position-relative">
+                <table
+                    class="table table-responsive table-striped table-bordered w-100"
+                    style="white-space: nowrap; max-height: 645px"
+                >
+                    <thead>
+                        <tr class="table-info">
+                            <th style="width: 18%" scope="col">商品条码</th>
+                            <th style="width: 37%" scope="col">商品名称</th>
+                            <th style="width: 8%" scope="col">规格</th>
+                            <th style="width: 8%" scope="col">单价</th>
+                            <th style="width: 8%" scope="col">现价</th>
+                            <th style="width: 8%" scope="col">数量</th>
+                            <th style="width: 10%" scope="col">小计</th>
+                            <th style="width: 8%" scope="col">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="(item, idx) in readCurrentOrder()"
+                            :key="idx"
+                        >
+                            <td>{{item.sBarCode}}</td>
+                            <td>{{item.sName}}</td>
+                            <td>{{item.sSpec}}</td>
+                            <td class="text-danger">{{item.dPrice}}</td>
+                            <td class="text-danger">{{item.dCurrentPrice}}</td>
+                            <td class="text-info">{{item.iCount}}</td>
+                            <td class="text-danger">
+                                {{(+item.dCurrentPrice)*(+item.iCount)}}
+                            </td>
+                            <td class="">
+                                <button
+                                    class="btn btn-sm btn-info"
+                                    @click="increseCount(item)"
+                                >
+                                    <i
+                                        class="fa fa-plus-square-o"
+                                        aria-hidden="true"
+                                    ></i>
+                                </button>
+                                <button
+                                    class="btn btn-sm btn-success"
+                                    @click="decreseCount(item)"
+                                >
+                                    <i
+                                        class="fa fa-minus-square-o"
+                                        aria-hidden="true"
+                                    ></i>
+                                </button>
+                                <button
+                                    class="btn btn-sm btn-danger"
+                                    @click="removeItem(item)"
+                                >
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="fixed-bottom bottom-panel position-absolute p-2">
+                    <div class="panel-head d-flex justify-content-between">
+                        <div
+                            class="text-info font-weight-bold ml-3"
+                            style="font-size: 19px"
+                        >
+                            共 {{getTotalCount(currentOrderId)}} 件
+                        </div>
+                        <div
+                            class="text-danger font-weight-bold mr-3"
+                            style="font-size: 19px"
+                        >
+                            总额 {{getTotalPrice(currentOrderId)}} 元
+                        </div>
+                    </div>
+                    <div
+                        class="panel-foot border d-flex p-2 alert-info justify-content-end"
+                    >
+                        <div class="w-50 text-right ">
+                            <button
+                                type="button"
+                                class="btn btn-large btn-secondary mx-2"
+                                @click="dropOrder(currentOrderId)"
+                            >
+                                订单作废
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-large btn-success mx-1"
+                                @click="attachOrder(currentOrderId),location.href='cashier.html'"
+                            >
+                                取单收银
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-large btn-danger mx-1"
+                                @click="attachOrder(currentOrderId),location.href='checkout.html'"
+                            >
+                                立即收款
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="./lib/goods.js"></script>
+        <script src="./lib/common.js"></script>
+        <script src="./lib/quicknav.js"></script>
+        <script>
+            let vm = new Vue({
+                el: "#order",
+                data: {
+                    total: {
+                        kindCount: 6,
+                        itemCount: 12,
+                        price: 72,
+                    },
+                    list: [],
+                    timer: 0,
+                    typeList: [],
+                    filter: {
+                        type: "",
+                        keyword: "",
+                    },
+                    preSelectOrder: [],
+                    collapseType: false,
+                    currentOrderId: 0,
+                    currentOrder: {},
+                },
+                computed: {},
+                created() {
+                    let barcode = ""
+                    document.body.addEventListener("keydown", (e) => {
+                        if (document.activeElement.tagName !== "INPUT") {
+                            if (!this.timer) {
+                                barcode = ""
+                            }
+
+                            if (e.key.length === 1) {
+                                barcode += e.key
+                            }
+
+                            this.timer = this.debounce(() => {
+                                this.timer = 0
+
+                                if (e.key === "Enter") {
+                                    this.join(barcode)
+                                }
+                            }, this.timer)
+                        }
+                    })
+                    this.loadGoods()
+                    this.loadOrder()
+                    if (this.order.length) {
+                        this.currentOrderId = this.order[0].id
+                    }
+                    this.list = this.goods
+                    this.typeList = this.getTypeList()
+
+                    const max = this.goods.reduce(
+                        (acc, good) => Math.max(acc, good.sName.length),
+                        0,
+                    )
+
+                    // const max = this.goods.reduce((max, good) => {
+                    //     console.log(max, good.sName.length);
+                    //     if (good.sName.length > max) {
+                    //         return good.sName.length;
+                    //     }
+                    // }, 0);
+                    console.log(max)
+                },
+                mounted() {
+                    $('[data-toggle="tooltip"]').tooltip()
+                    $(".collapse").collapse("hide")
+                },
+                methods: {
+                    syncUpdate(){
+                        localStorage.setItem('order', JSON.stringify(this.order))
+                        this.$forceUpdate()
+                    },
+                    showSearchModal() {
+                        // Swal.fire({
+                        //     html: $("#searchModal").html(),
+                        //     width: 900,
+                        //     padding: "0.5em",
+                        //     color: "#716add",
+                        //     background: "#fff ",
+                        //     backdrop: `
+                        //         rgba(0,0,123,0.4)
+                        //     `,
+                        //     showCancelButton: false,
+                        //     showConfirmButton: false,
+                        // })
+                        $("#searchModal").modal("show")
+                    },
+                    showCreateModal(barcode = "") {
+                        $("#createModal").modal("show")
+                        $("#createModal iframe").prop(
+                            "src",
+                            `./create.html?barcode=${barcode}`,
+                        )
+                    },
+                    toggleCollapse($event) {
+                        $(".collapse").collapse("toggle")
+                    },
+                    clear() {
+                        this.filter.keyword = []
+                        this.list = []
+                        this.$forceUpdate()
+                    },
+                    join(barcode) {
+                        let good = this.goods.find(
+                            (good) => good.sBarCode === barcode,
+                        )
+                        if (!good) {
+                            this.showCreateModal(barcode)
+                            return
+                        }
+
+                        const fetchGoods = this.goods.find(
+                            (good) => good.sBarCode === barcode,
+                        )
+                        if (this.currentOrder[fetchGoods.sBarCode]) {
+                            this.currentOrder[fetchGoods.sBarCode].iCount++
+                        } else {
+                            this.currentOrder[fetchGoods.sBarCode] = {
+                                sBarCode: fetchGoods.sBarCode,
+                                sName: fetchGoods.sName,
+                                dPrice: fetchGoods.dPrice,
+                                dCurrentPrice: fetchGoods.dPrice,
+                                iCount: 1,
+                            }
+                        }
+
+                        this.$forceUpdate()
+                    },
+                    getTotalPrice(id) {
+                        if (!id) {
+                            return 0
+                        }
+                        const fetchOrder = this.order.find( (o) => o.id === id)
+                        return Object.values(fetchOrder.goods).reduce(
+                            (sum, cur) => sum + cur.dCurrentPrice * cur.iCount,
+                            0,
+                        )
+                    },
+                    getTotalCount(id) {
+                        if (!id) {
+                            return 0
+                        }
+                        const fetchOrder = this.order.find( (o) => o.id === id)
+                        return Object.values(fetchOrder.goods).reduce(
+                            (sum, cur) => sum + cur.iCount,
+                            0,
+                        )
+                    },
+                    search() {
+                        this.list = this.goods
+                        if (this.filter.keyword) {
+                            let checkField = "sPinyin"
+                            if (!isNaN(this.filter.keyword)) {
+                                checkField = "sBarCode"
+                            } else if (
+                                /[\u4e00-\u9fa5]+/.test(this.filter.keyword)
+                            ) {
+                                checkField = "sName"
+                            }
+
+                            this.list = this.list.filter(
+                                (g) =>
+                                    g[checkField]
+                                        .toLowerCase()
+                                        .indexOf(this.filter.keyword) >= 0,
+                            )
+                        }
+
+                        // if (this.filter.type) {
+                        //     this.list = this.list.filter(
+                        //         (i) => i.sType === this.filter.type,
+                        //     )
+                        // }
+                        this.$forceUpdate()
+                    },
+                    async dropGoods(item) {
+                        await this.toast.confirm("确定删除该商品吗", "删除确认")
+                    },
+                    commitCreateGoods() {
+                        $("#createFrame")[0]
+                            .contentDocument.documentElement.querySelector(
+                                "#commitBtn",
+                            )
+                            .click()
+                        $("#createModal").modal("hide")
+                        this.loadGoods()
+                    },
+                    removeItem(item) {
+                        const fetchOrder = this.order.find(o => o.id === this.currentOrderId)
+                        delete fetchOrder.goods[item.sBarCode]
+                        // 没有商品自动清除挂单
+                        if (!Object.values(fetchOrder.goods).length) {
+                            this.dropOrder(fetchOrder.goods.id);
+                            return;
+                        }
+                        this.syncUpdate()
+                    },
+                    increseCount(item) {
+                        item.iCount++
+                        this.syncUpdate()
+                    },
+                    decreseCount(item) {
+                        if (item.iCount <= 1) {
+                            return
+                        }
+                        item.iCount--
+                        this.syncUpdate()
+                    },
+                    dropOrder(id){
+                        const idx = this.order.findIndex(o => o.id === this.currentOrderId)
+                        if (idx >= 0) {
+                            this.order.splice(idx, 1);
+                            if (this.order.length) {
+                                 this.currentOrderId = this.order[0].id
+                            }
+                            this.syncUpdate()
+                        }
+                    },
+                    togglePreSelect(item) {
+                        let idx = -1
+                        if ((idx = this.preSelectOrder.indexOf(item)) >= 0) {
+                            this.preSelectOrder.splice(idx, 1)
+                        } else {
+                            this.preSelectOrder.push(item)
+                        }
+                    },
+                    joinCurrentOrder() {
+                        this.preSelectOrder.forEach((item) => {
+                            if (this.currentOrder[item.sBarCode]) {
+                                this.currentOrder[item.sBarCode].iCount++
+                            } else {
+                                this.currentOrder[item.sBarCode] = {
+                                    sBarCode: item.sBarCode,
+                                    sName: item.sName,
+                                    dPrice: item.dPrice,
+                                    dCurrentPrice: item.dPrice,
+                                    iCount: 1,
+                                }
+                            }
+                        })
+                        this.preSelectOrder = []
+                        Swal.fire({
+                            icon: "success",
+                            title: "加入成功",
+                            showConfirmButton: false,
+                            timer: 1200,
+                        })
+                        $("#searchModal").modal("hide")
+                    },
+                    readCurrentOrder() {
+                        if (this.currentOrderId) {
+                            const fetchOrder = this.order.find(
+                                (o) => o.id === this.currentOrderId,
+                            )
+                            return fetchOrder.goods
+                        }
+                        return []
+                    },
+                    attachOrder(id){
+                        if (!id) {
+                             Swal.fire({
+                                icon: 'warning',
+                                title: '请先选择左侧订单',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                            return;
+                        }
+
+                        const fetchOrder = this.order.find(o => o.id === this.currentOrderId)
+                        localStorage.setItem('currentOrder', JSON.stringify(fetchOrder));
+                        this.dropOrder(fetchOrder.id)
+                    }
+                },
+            })
+        </script>
+    </body>
+</html>

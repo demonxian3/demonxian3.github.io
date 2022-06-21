@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"
+        />
+        <title>SXSH</title>
+        <link href="./css/quick-menu.css" rel="stylesheet" />
+        <link href="./css/bootstrap.min.css" rel="stylesheet" />
+        <link href="./css/font-awesome.min.css" rel="stylesheet" />
+        <link href="./css/checkout.css" rel="stylesheet" />
+        <link rel="shortcut icon" href="./img/hello.ico" type="image/x-icon" />
+
+        <script src="./js/vue.min.js"></script>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/bootstrap.bundle.min.js"></script>
+        <script src="./js/sweetalert2.all.js"></script>
+        <script src="./js/moment.min.js"></script>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css"> -->
+        <!-- <script src="./js/quick-menu.js"></script> -->
+        <style>
+            .list-group-item {
+                height: 80px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="d-flex" id="checkout">
+            <div style="width: 20%; height: 93vh">
+                <div
+                    class="list-group border"
+                    style="height: 100%; overflow-y: scroll"
+                >
+                    <h4 class="page-header text-center mt-2 text-info my-3">
+                        收款方式
+                    </h4>
+                    <div
+                        v-for="(way,idx) in supportPayway"
+                        :key="idx"
+                        class="list-group-item list-group-item-action d-flex align-items-center"
+                        @click="currentPayway = way.name"
+                        :class="{'list-group-item-info': currentPayway == way.name}"
+                    >
+                        <div class="w-25 text-center">
+                            <img :src="way.icon" style="width: 100%" />
+                        </div>
+                        <div
+                            class="w-75 ml-2 d-flex align-items-center"
+                            style="font-size: 19px"
+                        >
+                            {{way.label}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 80%; height: 93vh" class="p-1 position-relative">
+                <div class="font-weight-bold" style="background: white;">
+                    <div class="card w-75 mx-auto mt-3 py-3 shadow " >
+                         <div class="card-body">
+                        <div class="input-group input-group-lg w-75 m-auto ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text alert-primary">应收</span>
+                            </div>
+                            <input type="number" class="form-control text-right px-4 text-danger" :value="getTotalPrice()" disabled readonly>
+                        </div>
+                        <div 
+                            class="input-group input-group-lg w-75 mt-4 mx-auto" 
+                            :class="{'border border-primary': inputTarget === 'currentAmount'}" 
+                            @click="inputTarget = 'currentAmount'"
+                        >
+                            <div class="input-group-prepend">
+                                <span class="input-group-text alert-danger">实收</span>
+                            </div>
+                            <input type="number" class="form-control text-right px-4"  value="750" v-model="currentAmount">
+                        </div>
+                         <div 
+                            class="input-group input-group-lg w-75 mt-4 mx-auto " 
+                            :class="{'border border-primary': inputTarget === 'currentCoupon'}"
+                            @click="inputTarget = 'currentCoupon'"
+                        >
+                            <div class="input-group-prepend">
+                                <span class="input-group-text alert-success">优惠</span>
+                            </div>
+                            <input type="number" class="form-control text-right px-4"  value="750" v-model="currentCoupon">
+                        </div>
+                        <div class="input-group input-group-lg w-75 mt-4 mx-auto ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text alert-warning">{{getChange() < 0 ? '欠款' : '找零'}}</span>
+                            </div>
+                            <input type="number" class="form-control text-right px-4" :value="getChange()" disabled readonly>
+                        </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div
+                    class="fixed-bottom bottom-panel position-absolute"
+                    style="height: 40vh;"
+                >
+                    <div class="border  mx-auto mt-2 p-2 d-flex shadow" style="height: 95%;background:#f0f2f5;font-size: 23px;">
+                        <div class="d-flex flex-wrap " style="width:80%" >
+                            <div @click="handleClick" value="1" :class="btnCommonCss" class="w-23 alert-info">1</div>
+                            <div @click="handleClick" value="2" :class="btnCommonCss" class="w-23 alert-info">2</div>
+                            <div @click="handleClick" value="3" :class="btnCommonCss" class="w-23 alert-info">3</div>
+                            <div @click="handleClick" value="+10" :class="btnCommonCss" class="w-23 table-primary">￥10</div>
+                            <div @click="handleClick" value="4" :class="btnCommonCss" class="w-23 alert-info">4</div>
+                            <div @click="handleClick" value="5" :class="btnCommonCss" class="w-23 alert-info">5</div>
+                            <div @click="handleClick" value="6" :class="btnCommonCss" class="w-23 alert-info">6</div>
+                            <div @click="handleClick" value="+20" :class="btnCommonCss" class="w-23 table-warning">￥20</div>
+                            <div @click="handleClick" value="7" :class="btnCommonCss" class="w-23 alert-info">7</div>
+                            <div @click="handleClick" value="8" :class="btnCommonCss" class="w-23 alert-info">8</div>
+                            <div @click="handleClick" value="9" :class="btnCommonCss" class="w-23 alert-info">9</div>
+                            <div @click="handleClick" value="+50" :class="btnCommonCss" class="w-23 table-success">￥50</div>
+                            <div @click="handleClick" value="0" :class="btnCommonCss" class="w-23 alert-info">0</div>
+                            <div @click="handleClick" value="00" :class="btnCommonCss" class="w-23 alert-info">00</div>
+                            <div @click="handleClick" value="." :class="btnCommonCss" class="w-23 alert-info">.</div>
+                            <div @click="handleClick" value="+100" :class="btnCommonCss" class="w-23 table-danger">￥100</div>
+                        </div>
+                        <div class="d-flex flex-column " style="width:20%">
+                             <div value="back" class="bg-secondary text-white h-25" :class="btnCommonCss" @click.stop="handleClick">
+                                <i class="fa fa-arrow-left"></i>
+                             </div>
+                             <div value="clear" class="bg-danger text-white h-25" :class="btnCommonCss" @click="handleClick">
+                                清空
+                             </div>
+                            <div value="commit" class="alert-info text-white h-50" :class="btnCommonCss" @click="commitOrder" style="background-color: #59a51c;">确认</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="./lib/goods.js"></script>
+        <script src="./lib/common.js"></script>
+        <script src="./lib/quicknav.js"></script>
+        <script>
+            let vm = new Vue({
+                el: "#checkout",
+                data: {
+                    btnCommonCss: 'border rounded m-1 d-flex align-items-center justify-content-center shadow-sm',
+                    total: {
+                        kindCount: 6,
+                        itemCount: 12,
+                        price: 72,
+                    },
+                    list: [],
+                    timer: 0,
+                    typeList: [],
+                    filter: {
+                        type: "",
+                        keyword: "",
+                    },
+                    preSelectOrder: [],
+                    collapseType: false,
+                    currentOrderId: 0,
+                    currentPayway: 'wxpay',
+                    currentOrder: {},
+                    finishOrder: [],
+                    currentAmount: '',
+                    currentCoupon: '',
+                    inputTarget: 'currentAmount', //coupon,amount
+                    supportPayway: [
+                        {name: 'wxpay', label: '微信支付', icon: './img/wxpay.svg'},
+                        {name: 'alipay', label: '支付宝支付', icon: './img/alipay.svg'},
+                        {name: 'cashpay', label: '现金支付', icon: './img/cash.svg'},
+                        {name: 'unionpay', label: '银联支付', icon: './img/bank.svg'},
+                        {name: 'cfpay', label: '云闪付支付', icon: './img/cfpay.svg'},
+                        {name: 'credit', label: '赊账欠款', icon: './img/credit.svg'},
+                    ]
+                },
+                computed: {},
+                created() {
+                    this.loadCurrentOrder(true)
+                    if (!Object.keys(this.currentOrder).length) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '当前没有订单，无法收银',
+                            timer: 1500
+                        })
+                    }
+                },
+                mounted() {
+                    $('[data-toggle="tooltip"]').tooltip()
+                    $(".collapse").collapse("hide")
+                },
+                methods: {
+                    handleClick(e){
+                        let value = this[this.inputTarget];
+                        let inputValue = e.target.getAttribute('value')
+
+                        if (inputValue && inputValue[0] === '+') {
+                            value = +value + +(inputValue.substr(1)-0)
+                        } else if (inputValue === 'clear') {
+                            value = '';
+                        } else if (inputValue === 'back') {
+                            value = value.substr(0, value.length-1)
+                        } else {
+                            value += inputValue
+                        }
+
+                        if (!isNaN(value) || value === '') {
+                            this[this.inputTarget] = value;
+                        }
+                        
+                    },
+                    syncUpdate() {
+                        localStorage.setItem(
+                            "order",
+                            JSON.stringify(this.order),
+                        )
+                        this.$forceUpdate()
+                    },
+                    showSearchModal() {
+                        $("#searchModal").modal("show")
+                    },
+                    showCreateModal(barcode = "") {
+                        $("#createModal").modal("show")
+                        $("#createModal iframe").prop(
+                            "src",
+                            `./create.html?barcode=${barcode}`,
+                        )
+                    },
+                    toggleCollapse($event) {
+                        $(".collapse").collapse("toggle")
+                    },
+                    clear() {
+                        this.filter.keyword = []
+                        this.list = []
+                        this.$forceUpdate()
+                    },
+                    join(barcode) {
+                        let good = this.goods.find(
+                            (good) => good.sBarCode === barcode,
+                        )
+                        if (!good) {
+                            this.showCreateModal(barcode)
+                            return
+                        }
+
+                        const fetchGoods = this.goods.find(
+                            (good) => good.sBarCode === barcode,
+                        )
+                        if (this.currentOrder[fetchGoods.sBarCode]) {
+                            this.currentOrder[fetchGoods.sBarCode].iCount++
+                        } else {
+                            this.currentOrder[fetchGoods.sBarCode] = {
+                                sBarCode: fetchGoods.sBarCode,
+                                sName: fetchGoods.sName,
+                                dPrice: fetchGoods.dPrice,
+                                dCurrentPrice: fetchGoods.dPrice,
+                                iCount: 1,
+                            }
+                        }
+
+                        this.$forceUpdate()
+                    },
+                    getTotalPrice() {
+                       if (!Object.keys(this.currentOrder).length) {
+                            return 0
+                       }
+
+                       return Object.values(this.currentOrder.goods).reduce((s, c) => s += (c.iCount * c.dCurrentPrice), 0)
+                    },
+                    getChange() {
+                        return +this.currentAmount - this.getTotalPrice() - +this.currentCoupon
+                    },
+                    getTotalCount(id) {
+                        if (!id) {
+                            return 0
+                        }
+                        const fetchOrder = this.order.find((o) => o.id === id)
+                        return Object.values(fetchOrder.goods).reduce(
+                            (sum, cur) => sum + cur.iCount,
+                            0,
+                        )
+                    },
+                    search() {
+                        this.list = this.goods
+                        if (this.filter.keyword) {
+                            let checkField = "sPinyin"
+                            if (!isNaN(this.filter.keyword)) {
+                                checkField = "sBarCode"
+                            } else if (
+                                /[\u4e00-\u9fa5]+/.test(this.filter.keyword)
+                            ) {
+                                checkField = "sName"
+                            }
+
+                            this.list = this.list.filter(
+                                (g) =>
+                                    g[checkField]
+                                        .toLowerCase()
+                                        .indexOf(this.filter.keyword) >= 0,
+                            )
+                        }
+
+                        // if (this.filter.type) {
+                        //     this.list = this.list.filter(
+                        //         (i) => i.sType === this.filter.type,
+                        //     )
+                        // }
+                        this.$forceUpdate()
+                    },
+                    async dropGoods(item) {
+                        await this.toast.confirm("确定删除该商品吗", "删除确认")
+                    },
+                    commitCreateGoods() {
+                        $("#createFrame")[0]
+                            .contentDocument.documentElement.querySelector(
+                                "#commitBtn",
+                            )
+                            .click()
+                        $("#createModal").modal("hide")
+                        this.loadGoods()
+                    },
+                    removeItem(item) {
+                        const fetchOrder = this.order.find(
+                            (o) => o.id === this.currentOrderId,
+                        )
+                        delete fetchOrder.goods[item.sBarCode]
+                        // 没有商品自动清除挂单
+                        if (!Object.values(fetchOrder.goods).length) {
+                            this.dropOrder(fetchOrder.goods.id)
+                            return
+                        }
+                        this.syncUpdate()
+                    },
+                    increseCount(item) {
+                        item.iCount++
+                        this.syncUpdate()
+                    },
+                    decreseCount(item) {
+                        if (item.iCount <= 1) {
+                            return
+                        }
+                        item.iCount--
+                        this.syncUpdate()
+                    },
+                    dropOrder(id) {
+                        const idx = this.order.findIndex(
+                            (o) => o.id === this.currentOrderId,
+                        )
+                        if (idx >= 0) {
+                            this.order.splice(idx, 1)
+                            if (this.order.length) {
+                                this.currentOrderId = this.order[0].id
+                            }
+                            this.syncUpdate()
+                        }
+                    },
+                    togglePreSelect(item) {
+                        let idx = -1
+                        if ((idx = this.preSelectOrder.indexOf(item)) >= 0) {
+                            this.preSelectOrder.splice(idx, 1)
+                        } else {
+                            this.preSelectOrder.push(item)
+                        }
+                    },
+                    joinCurrentOrder() {
+                        this.preSelectOrder.forEach((item) => {
+                            if (this.currentOrder[item.sBarCode]) {
+                                this.currentOrder[item.sBarCode].iCount++
+                            } else {
+                                this.currentOrder[item.sBarCode] = {
+                                    sBarCode: item.sBarCode,
+                                    sName: item.sName,
+                                    dPrice: item.dPrice,
+                                    dCurrentPrice: item.dPrice,
+                                    iCount: 1,
+                                }
+                            }
+                        })
+                        this.preSelectOrder = []
+                        Swal.fire({
+                            icon: "success",
+                            title: "加入成功",
+                            showConfirmButton: false,
+                            timer: 1200,
+                        })
+                        $("#searchModal").modal("hide")
+                    },
+                    readCurrentOrder() {
+                        if (this.currentOrderId) {
+                            const fetchOrder = this.order.find(
+                                (o) => o.id === this.currentOrderId,
+                            )
+                            return fetchOrder.goods
+                        }
+                        return []
+                    },
+                    attachOrder(id) {
+                        if (!id) {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "请先选择左侧订单",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            })
+                            return
+                        }
+
+                        const fetchOrder = this.order.find(
+                            (o) => o.id === this.currentOrderId,
+                        )
+                        localStorage.setItem(
+                            "currentOrder",
+                            JSON.stringify(fetchOrder),
+                        )
+                        this.dropOrder(fetchOrder.id)
+                        location.href = "cashier.html"
+                    },
+                    commitOrder(){
+                        if (this.getChange() < 0) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "当前订单存在欠款无法结账",
+                                timer: 1500,
+                            })
+                            return;
+                        }
+
+                        let currentFinsh = Object.assign(this.currentOrder, {
+                            finishTime: moment().format('YYYY-MM-DD hh:mm:ss'),
+                            price: this.getTotalPrice(),
+                            coupon: this.currentCoupon,
+                            amount: this.currentAmount,
+                            payway: this.currentPayway,
+                            change: this.getChange(),
+                        })
+
+                        this.loadFinishOrder()
+                        this.finishOrder.push(currentFinsh)
+                        
+                        localStorage.setItem('finishOrder', JSON.stringify(this.finishOrder))
+                        localStorage.removeItem('currentOrder')
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "结算成功",
+                            timer: 800,
+                            didClose(){
+                                location.href= 'cashier.html'
+                            }
+                        })
+                    }
+                },
+            })
+        </script>
+    </body>
+</html>

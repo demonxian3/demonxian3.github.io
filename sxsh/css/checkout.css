@@ -1,0 +1,23 @@
+.w-23 {
+    width: 23%;
+}
+
+.bg-rmb-10 {
+    background-image: url('../img/10.jpg');
+    background-size: cover;
+}
+
+.bg-rmb-20 {
+    background-image: url('../img/20.jpg');
+    background-size: cover;
+}
+
+.bg-rmb-50 {
+    background-image: url('../img/50.jpg');
+    background-size: cover;
+}
+
+.bg-rmb-100 {
+    background-image: url('../img/100.jpg');
+    background-size: cover;
+}

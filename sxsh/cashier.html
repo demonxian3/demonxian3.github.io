@@ -15,6 +15,7 @@
         <link rel="shortcut icon" href="./img/hello.ico" type="image/x-icon" />
 
         <script src="./js/vue.min.js"></script>
+        <script src="./js/moment.min.js"></script>
         <script src="./js/jquery.min.js"></script>
         <script src="./js/bootstrap.bundle.min.js"></script>
         <script src="./js/sweetalert2.all.js"></script>
@@ -53,10 +54,10 @@
                         </td>
                         <td class="">
                             
-                            <button class="btn btn-sm btn-info" @click="addItemCount(item)">
+                            <button class="btn btn-sm btn-info" @click="increseCount(item)">
                                 <i class="fa fa-plus-square-o" aria-hidden="true"></i> 
                             </button>
-                             <button class="btn btn-sm btn-success" @click="delItemCount(item)">
+                             <button class="btn btn-sm btn-success" @click="decreseCount(item)">
                                 <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                             </button>
                             <button class="btn btn-sm btn-danger" @click="removeItem(item)">
@@ -83,9 +84,19 @@
                     >
                         <button
                             type="button"
-                            class="btn btn-large btn-danger mx-2"
+                            class="btn btn-large btn-warning mx-2"
+                            v-show="Object.keys(currentOrder).length"
+                            @click="detachOrder()"
                         >
                             挂单
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-large btn-danger mx-2"
+                            v-show="!Object.keys(currentOrder).length"
+                            onclick="location.href = 'order.html'"
+                        >
+                            取单
                         </button>
                         <button
                             type="button"
@@ -97,7 +108,7 @@
                         <button
                             type="button"
                             class="btn btn-large btn-success mx-2"
-                            @click="currentOrder = {}"
+                            @click="currentOrder = {},syncUpdate()"
                         >
                             清空
                         </button>
@@ -137,6 +148,7 @@
                         class="panel-right border d-flex align-items-center justify-content-center"
                     >
                         <button
+                            @click="attachOrder(),location.href='checkout.html'"
                             class="bg-danger border-0 d-flex text-white d-block p-3 w-100"
                         >
                             <div>
@@ -272,10 +284,9 @@
                     },
                     preSelectOrder: [],
                     collapseType: false,
-                    currentOrder: { },
+                    currentOrder: {},
                 },
                 computed: {
-
                 },
                 created() {
                     let barcode = ""
@@ -299,27 +310,30 @@
                         }
                     })
                     this.loadGoods()
+                    this.loadOrder()
+                    this.loadCurrentOrder()
                     this.list = this.goods
                     this.typeList = this.getTypeList()
-
-                    const max = this.goods.reduce(
-                        (acc, good) => Math.max(acc, good.sName.length),
-                        0,
-                    )
-
-                    // const max = this.goods.reduce((max, good) => {
-                    //     console.log(max, good.sName.length);
-                    //     if (good.sName.length > max) {
-                    //         return good.sName.length;
-                    //     }
-                    // }, 0);
-                    console.log(max)
                 },
                 mounted() {
                     $('[data-toggle="tooltip"]').tooltip()
                     $(".collapse").collapse("hide")
                 },
                 methods: {
+                    syncUpdate(){
+                        let order = {
+                            id: moment().unix(),
+                            createTime: moment().format("YYYY-MM-DD hh:mm:ss"),
+                            goods: this.currentOrder,
+                        }
+
+                        if (!order.goods.length) {
+                            localStorage.removeItem('currentOrder')
+                        } else {
+                            localStorage.setItem('currentOrder', JSON.stringify())
+                        }
+                        this.$forceUpdate(); 
+                    },
                     showSearchModal() {
                         // Swal.fire({
                         //     html: $("#searchModal").html(),
@@ -373,9 +387,6 @@
                         this.$forceUpdate();
                     },
                     totalPrice() {
-                        if (!Object.values(this.currentOrder).length) {
-                            return 0
-                        }
                         return Object.values(this.currentOrder).reduce(
                             (sum, cur) => sum + cur.dCurrentPrice * cur.iCount,
                             0,
@@ -419,20 +430,20 @@
                     removeItem(item) {
                         const barcode = item.sBarCode;
                         delete this.currentOrder[barcode]
-                        this.$forceUpdate();
+                        this.syncUpdate();
                     },
-                    addItemCount(item){
+                    increseCount(item){
                         const barcode = item.sBarCode;
                         this.currentOrder[barcode].iCount++
-                        this.$forceUpdate();
+                        this.syncUpdate();
                     },
-                    delItemCount(item){
+                    decreseCount(item){
                         const barcode = item.sBarCode;
                         if (this.currentOrder[barcode].iCount<=1) {
                             return;
                         }
                         this.currentOrder[barcode].iCount--
-                        this.$forceUpdate();
+                        this.syncUpdate();
                           
                     },
                     togglePreSelect(item){
@@ -462,9 +473,28 @@
                             icon: 'success',
                             title: '加入成功',
                             showConfirmButton: false,
-                            timer: 1200
+                            timer: 700
                         })
                         $('#searchModal').modal('hide');
+                    },
+                    detachOrder(){
+                        this.order.unshift({
+                            id: moment().unix(),
+                            createTime: moment().format("YYYY-MM-DD hh:mm:ss"),
+                            goods: this.currentOrder,
+                        });
+                        localStorage.setItem('order', JSON.stringify(this.order))
+                        localStorage.setItem('currentOrder', '')
+                        this.currentOrder = {}
+                        this.$forceUpdate();
+                    },
+
+                    attachOrder(){
+                        localStorage.setItem('currentOrder', JSON.stringify({
+                            id: moment().unix(),
+                            createTime: moment().format("YYYY-MM-DD hh:mm:ss"),
+                            goods: this.currentOrder,
+                        }));
                     }
                 },
             })

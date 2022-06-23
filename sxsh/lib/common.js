@@ -7,12 +7,15 @@ Vue.use({
                 finishOrder: [],
                 currentOrder: {},
                 toast: null,
+                
             },
             methods: {
+                loadPayway() {
+                    this.payway = this.payway;
+                },
                 loadGoods() {
                     try {
-                        this.goods =
-                            JSON.parse(localStorage.getItem("goods")) || []
+                        this.goods = JSON.parse(localStorage.getItem("goods")) || []
                     } catch (e) {
                         this.goods = []
                     }
@@ -62,7 +65,16 @@ Vue.use({
                         this.finishOrder = []
                     }
                 },
-
+                getPayway(){
+                    return  {
+                        wxpay: {name: 'wxpay', label: '微信支付', icon: './img/wxpay.svg'},
+                        alipay: {name: 'alipay', label: '支付宝支付', icon: './img/alipay.svg'},
+                        cashpay: {name: 'cashpay', label: '现金支付', icon: './img/cash.svg'},
+                        unionpay: {name: 'unionpay', label: '银联支付', icon: './img/bank.svg'},
+                        cfpay: {name: 'cfpay', label: '云闪付支付', icon: './img/cfpay.svg'},
+                        credit: {name: 'credit', label: '赊账欠款', icon: './img/credit.svg'},
+                    }
+                },
                 getTypeList(goods = null) {
                     if (!goods) {
                         goods = this.goods
@@ -145,6 +157,9 @@ $nav = $(`<nav class="navbar navbar-dark bg-info">
     </li>
     <li class="nav-item mr-3" >
         <a class="nav-link pb-1" href="order.html">订单</a>
+    </li>
+    <li class="nav-item mr-3" >
+        <a class="nav-link pb-1" href="history.html">历史</a>
     </li>
     <li class="nav-item mr-3" >
         <a class="nav-link pb-1" href="goods.html">商品</a>

@@ -121,8 +121,8 @@
                             <div @click="handleClick" value="+100" :class="btnCommonCss" class="w-23 table-danger">￥100</div>
                         </div>
                         <div class="d-flex flex-column " style="width:20%">
-                             <div value="back" class="bg-secondary text-white h-25" :class="btnCommonCss" @click.stop="handleClick">
-                                <i class="fa fa-arrow-left"></i>
+                             <div value="back" class="bg-secondary text-white h-25" :class="btnCommonCss" @click="handleClick">
+                                <i class="fa fa-arrow-left" value="back"></i>
                              </div>
                              <div value="clear" class="bg-danger text-white h-25" :class="btnCommonCss" @click="handleClick">
                                 清空
@@ -162,17 +162,11 @@
                     currentAmount: '',
                     currentCoupon: '',
                     inputTarget: 'currentAmount', //coupon,amount
-                    supportPayway: [
-                        {name: 'wxpay', label: '微信支付', icon: './img/wxpay.svg'},
-                        {name: 'alipay', label: '支付宝支付', icon: './img/alipay.svg'},
-                        {name: 'cashpay', label: '现金支付', icon: './img/cash.svg'},
-                        {name: 'unionpay', label: '银联支付', icon: './img/bank.svg'},
-                        {name: 'cfpay', label: '云闪付支付', icon: './img/cfpay.svg'},
-                        {name: 'credit', label: '赊账欠款', icon: './img/credit.svg'},
-                    ]
+                    supportPayway: [],
                 },
                 computed: {},
                 created() {
+                    this.supportPayway = Object.values((this.getPayway()))
                     this.loadCurrentOrder(true)
                     if (!Object.keys(this.currentOrder).length) {
                         Swal.fire({
@@ -196,13 +190,14 @@
                         } else if (inputValue === 'clear') {
                             value = '';
                         } else if (inputValue === 'back') {
+                            value = value.toString()
                             value = value.substr(0, value.length-1)
                         } else {
                             value += inputValue
                         }
 
                         if (!isNaN(value) || value === '') {
-                            this[this.inputTarget] = value;
+                            this[this.inputTarget] = +value;
                         }
                         
                     },
@@ -265,7 +260,7 @@
                        return Object.values(this.currentOrder.goods).reduce((s, c) => s += (c.iCount * c.dCurrentPrice), 0)
                     },
                     getChange() {
-                        return +this.currentAmount - this.getTotalPrice() - +this.currentCoupon
+                        return +this.currentAmount - (this.getTotalPrice() - (+this.currentCoupon))
                     },
                     getTotalCount(id) {
                         if (!id) {
@@ -432,7 +427,7 @@
                         })
 
                         this.loadFinishOrder()
-                        this.finishOrder.push(currentFinsh)
+                        this.finishOrder.unshift(currentFinsh)
                         
                         localStorage.setItem('finishOrder', JSON.stringify(this.finishOrder))
                         localStorage.removeItem('currentOrder')

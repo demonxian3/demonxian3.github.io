@@ -50,80 +50,163 @@
                 </div>
             </div>
             <div style="width: 80%; height: 93vh" class="p-1 position-relative">
-                <table
-                    class="table table-responsive table-striped table-bordered w-100"
-                    style="white-space: nowrap; max-height: 618px"
-                >
-                    <thead>
-                        <tr class="table-info">
-                            <th style="width: 18%" scope="col">商品条码</th>
-                            <th style="width: 37%" scope="col">商品名称</th>
-                            <th style="width: 8%" scope="col">规格</th>
-                            <th style="width: 8%" scope="col">单价</th>
-                            <th style="width: 8%" scope="col">现价</th>
-                            <th style="width: 8%" scope="col">数量</th>
-                            <th style="width: 10%" scope="col">小计</th>
-                            <th style="width: 8%" scope="col">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(item, idx) in readCurrentOrder()"
-                            :key="idx"
-                        >
-                            <td>{{item.sBarCode}}</td>
-                            <td>{{item.sName}}</td>
-                            <td>{{item.sSpec}}</td>
-                            <td class="text-danger">{{item.dPrice}}</td>
-                            <td class="text-danger">{{item.dCurrentPrice}}</td>
-                            <td class="text-info">{{item.iCount}}</td>
-                            <td class="text-danger">
-                                {{(+item.dCurrentPrice)*(+item.iCount)}}
-                            </td>
-                            <td class="">
-                                <button
-                                    class="btn btn-sm btn-info"
-                                    @click="increseCount(item)"
-                                >
-                                    <i
-                                        class="fa fa-plus-square-o"
-                                        aria-hidden="true"
-                                    ></i>
-                                </button>
-                                <button
-                                    class="btn btn-sm btn-success"
-                                    @click="decreseCount(item)"
-                                >
-                                    <i
-                                        class="fa fa-minus-square-o"
-                                        aria-hidden="true"
-                                    ></i>
-                                </button>
-                                <button
-                                    class="btn btn-sm btn-danger"
-                                    @click="removeItem(item)"
-                                >
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="fixed-bottom bottom-panel position-absolute p-2">
-                    <div class="panel-head d-flex justify-content-between">
-                        <div
-                            class="text-info font-weight-bold ml-3"
-                            style="font-size: 19px"
-                        >
-                            共 {{getTotalCount(currentOrderId)}} 件
-                        </div>
-                        <div
-                            class="text-danger font-weight-bold mr-3"
-                            style="font-size: 19px"
-                        >
-                            总额 {{getTotalPrice(currentOrderId)}} 元
+                <div class="card text-center" style="max-height: 618px;overflow-y: scroll;">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" :class=" {active: currentShow === 'info'}" @click="currentShow='info'">订单信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class=" {active: currentShow === 'detail'}" @click="currentShow='detail'">商品明细</a>
+                    </li>
+                    </ul>
+                </div>
+                    <table
+                        v-show="currentShow === 'detail'"
+                        class="table table-responsive table-striped table-bordered w-100 card-body"
+                        style="white-space: nowrap; margin-bottom: 0px;"
+                    >
+                        <thead>
+                            <tr class="table-info">
+                                <th style="width: 18%" scope="col">商品条码</th>
+                                <th style="width: 37%" scope="col">商品名称</th>
+                                <th style="width: 8%" scope="col">规格</th>
+                                <th style="width: 8%" scope="col">单价</th>
+                                <th style="width: 8%" scope="col">现价</th>
+                                <th style="width: 8%" scope="col">数量</th>
+                                <th style="width: 10%" scope="col">小计</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(item, idx) in readCurrentOrder()"
+                                :key="idx"
+                            >
+                                <td>{{item.sBarCode}}</td>
+                                <td class="text-left">{{item.sName}}</td>
+                                <td>{{item.sSpec}}</td>
+                                <td class="text-danger">{{item.dPrice}}</td>
+                                <td class="text-danger">{{item.dCurrentPrice}}</td>
+                                <td class="text-info">{{item.iCount}}</td>
+                                <td class="text-danger">
+                                    {{((+item.dCurrentPrice)*(+item.iCount)).toFixed(2)}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="card-body" v-show="currentShow === 'info'" >
+                        <div class="d-flex">
+                            <ul class="list-group list-group-sm text-left" style="width:49%">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">订单编号</small>
+                                    <small class="text-left badge badge-primary ">{{currentOrder.id}}</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">下单时间</small>
+                                    <small class="text-left text-nowrap">{{currentOrder.createTime}}</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">结账时间</small>
+                                    <small class="text-left text-nowrap">{{currentOrder.finishTime}}</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">商品种数</small>
+                                    <small class="text-left text-nowrap">{{Object.keys(currentOrder.goods).length}}</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">商品数量</small>
+                                    <small class="text-left text-nowrap">{{getTotalCount(currentOrderId)}}</small>
+                                </li>
+                               
+                            </ul>
+                            <ul class="list-group list-group-sm text-left mx-3" style="width:49%">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">结算方式</small>
+                                    <small class="text-left text-nowrap">{{payway[currentOrder.payway].label}}</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">商品总价</small>
+                                    <small class="text-left">{{(+currentOrder.price).toFixed(2)}}</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">收取金额</small>
+                                    <small class="text-left">{{(+currentOrder.amount).toFixed(2)}}</small>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">优惠金额</small>
+                                    <small class="text-left">{{(+currentOrder.coupon).toFixed(2)}}</small>
+                                </li>
+                                 <li class="list-group-item d-flex align-items-center">
+                                    <small style="width:60%">{{currentOrder.change < 0 ? '赊账金额' : '找零金额'}}</small>
+                                    <small class="text-left">{{(+currentOrder.coupon).toFixed(2)}}</small>
+                                </li>
+                            </ul>
                         </div>
                     </div>
+                </div>
+
+                <div class="modal fade" id="ticketModal" centered>
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">小票样本</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <iframe frameborder="0" ref="ticketFrame" class="border " >
+                            </iframe>
+                            <div style="width: 250px" class="mx-auto" ref="ticket">
+                            <div class="p-2 border" style="width:98%" >
+                                <h5 class="text-center" style="border-bottom: 1px dashed#000;">欢迎光临盛兴商店</h5>
+                                <div class="d-flex justify-content-between">
+                                    <small class="mb-1">店号: </small>
+                                    <small class="mb-1">NSSKYCL99</small>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small class="mb-1">流水号: </small>
+                                    <small class="mb-1">{{currentOrder.id}} </small>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small class="mb-1">交易时间: </small>
+                                    <small class="mb-1">{{currentOrder.finishTime}}</small>
+                                </div>
+                                <table class="table w-100 table-sm mt-1" style="font-size: 14px;">
+                                    <tr>
+                                        <th>商品名称</th>
+                                        <th>单价</th>
+                                        <th>数量</th>
+                                        <th>金额</th>
+                                    </tr>
+
+                                    <template v-for="(g, idx) in Object.values(currentOrder.goods)">
+                                        <tr>
+                                            <td colspan="4" class="pb-0">{{g.sName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border:none;" class="pt-0">{{g.sBarCode}}</td>
+                                            <td style="border:none;" class="pt-0">{{g.dPrice}}</td>
+                                            <td style="border:none;" class="pt-0">{{g.iCount}}</td>
+                                            <td style="border:none;" class="pt-0">{{g.iCount * g.dPrice}}</td>
+                                        </tr>
+                                    </template>
+                                   
+                                </table>
+                            </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary" @click="printTicket()">打印</button>
+                        </div>
+                        </div>
+                    </div>
+                    
+                </div>
+              
+                <div class="fixed-bottom bottom-panel position-absolute p-2">
                     <div
                         class="panel-foot border d-flex p-2 alert-info justify-content-end"
                     >
@@ -131,23 +214,16 @@
                             <button
                                 type="button"
                                 class="btn btn-large btn-secondary mx-2"
-                                @click="dropOrder(currentOrderId)"
+                                @click="showTicketModel()"
                             >
-                                订单作废
+                                查看小票
                             </button>
                             <button
                                 type="button"
                                 class="btn btn-large btn-success mx-1"
-                                @click="attachOrder(currentOrderId),location.href='cashier.html'"
+                                @click=""
                             >
-                                取单收银
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-large btn-danger mx-1"
-                                @click="attachOrder(currentOrderId),location.href='checkout.html'"
-                            >
-                                立即收款
+                                打印小票
                             </button>
                         </div>
                     </div>
@@ -176,56 +252,42 @@
                     preSelectOrder: [],
                     collapseType: false,
                     currentOrderId: 0,
-                    currentOrder: {},
+                    currentShow: 'info', // detail info
+                    order: [],
+                    payway: {},
+                    ticketContent: '',
                 },
-                computed: {},
+                computed: {
+                    currentOrder(){
+                        return this.order.find( (o) => o.id === this.currentOrderId)
+                    }
+                },
                 created() {
-                    let barcode = ""
-                    document.body.addEventListener("keydown", (e) => {
-                        if (document.activeElement.tagName !== "INPUT") {
-                            if (!this.timer) {
-                                barcode = ""
-                            }
-
-                            if (e.key.length === 1) {
-                                barcode += e.key
-                            }
-
-                            this.timer = this.debounce(() => {
-                                this.timer = 0
-
-                                if (e.key === "Enter") {
-                                    this.join(barcode)
-                                }
-                            }, this.timer)
-                        }
-                    })
-                    this.loadGoods()
-                    this.loadOrder()
+                    this.payway = (this.getPayway())
+                    this.loadFinishOrder()
+                    this.order = this.finishOrder;
                     if (this.order.length) {
                         this.currentOrderId = this.order[0].id
                     }
                     this.list = this.goods
-                    this.typeList = this.getTypeList()
-
-                    const max = this.goods.reduce(
-                        (acc, good) => Math.max(acc, good.sName.length),
-                        0,
-                    )
-
-                    // const max = this.goods.reduce((max, good) => {
-                    //     console.log(max, good.sName.length);
-                    //     if (good.sName.length > max) {
-                    //         return good.sName.length;
-                    //     }
-                    // }, 0);
-                    console.log(max)
                 },
                 mounted() {
                     $('[data-toggle="tooltip"]').tooltip()
                     $(".collapse").collapse("hide")
                 },
                 methods: {
+                    showTicketModel(){
+                        $('#ticketModal').modal('show')
+                    },
+                    printTicket(){
+                        this.ticketContent = this.$refs['ticket'].innerHTML
+
+                        this.$refs['ticketFrame'].onload = () => {
+                            this.$refs['ticketFrame'].contentWindow.print()
+                        }
+
+                        this.$refs['ticketFrame'].srcdoc = '<link href="./css/bootstrap.min.css" rel="stylesheet" />'+this.$refs['ticket'].innerHTML
+                    },
                     syncUpdate(){
                         localStorage.setItem('order', JSON.stringify(this.order))
                         this.$forceUpdate()

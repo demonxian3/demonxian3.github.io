@@ -204,6 +204,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-primary" @click="printTicket()">打印</button>
+                            <button type="button" class="btn btn-outline-primary" @click="printTicket2()">打印2</button>
                         </div>
                         </div>
                     </div>
@@ -289,6 +290,9 @@
                         }
 
                         this.$refs['ticketFrame'].srcdoc = '<link href="./css/bootstrap.min.css" rel="stylesheet" />'+this.$refs['ticketContent'].outerHTML
+                    },
+                    printTicket2(){
+                       this.$refs['ticketFrame'].contentWindow.print()
                     },
                     syncUpdate(){
                         localStorage.setItem('order', JSON.stringify(this.order))

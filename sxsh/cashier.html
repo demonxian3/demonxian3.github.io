@@ -118,24 +118,22 @@
                     class="panel-foot alert-primary d-flex justify-content-between"
                 >
                     <div class="panel-left border ml-4 mt-2">
-                        <div class="input-group flex-nowrap">
+                        <div class="input-group flex-nowrap" @click="showSearchModal(1)">
                             <input
                                 class="form-control"
                                 placeholder="条码/拼音/品名"
                             />
-                            <div
-                                class="input-group-append"
-                                @click="showSearchModal"
-                            >
+                            <div class="input-group-append" >
                                 <button class="btn btn-info">
                                     <i class="fa fa-keyboard-o"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="input-group flex-nowrap mt-2">
+                        <div class="input-group flex-nowrap mt-2"   @click="showSearchModal(0)">
                             <input
                                 class="form-control"
                                 placeholder="输入价格无码收银"
+                              
                             />
                             <div class="input-group-append">
                                 <button class="btn btn-secondary">
@@ -148,7 +146,7 @@
                         class="panel-right border d-flex align-items-center justify-content-center"
                     >
                         <button
-                            @click="attachOrder(),location.href='checkout.html'"
+                            @click="toCheckout()"
                             class="bg-danger border-0 d-flex text-white d-block p-3 w-100"
                         >
                             <div>
@@ -318,21 +316,10 @@
                         }
                         this.$forceUpdate(); 
                     },
-                    showSearchModal() {
-                        // Swal.fire({
-                        //     html: $("#searchModal").html(),
-                        //     width: 900,
-                        //     padding: "0.5em",
-                        //     color: "#716add",
-                        //     background: "#fff ",
-                        //     backdrop: `
-                        //         rgba(0,0,123,0.4)
-                        //     `,
-                        //     showCancelButton: false,
-                        //     showConfirmButton: false,
-                        // })
+                    showSearchModal(hasCode) {
+                        this.filter.type = hasCode ? '' : '无条码'
+                        this.search()
                         $('#searchModal').modal('show')
-
                     },
                     showCreateModal(barcode = "") {
                         $('#createModal').modal('show')
@@ -377,7 +364,7 @@
                         )
                     },
                     search() {
-                        this.list = this.goods
+                        this.list = this.filter.type ? this.goods.filter(g => g.sType === this.filter.type) : this.goods
                         if (this.filter.keyword) {
                             let checkField = "sPinyin"
                             if (!isNaN(this.filter.keyword)) {
@@ -391,16 +378,13 @@
                             this.list = this.list.filter(
                                 (g) =>
                                     g[checkField]
+                                        .toString()
                                         .toLowerCase()
                                         .indexOf(this.filter.keyword) >= 0,
                             )
                         }
 
-                        // if (this.filter.type) {
-                        //     this.list = this.list.filter(
-                        //         (i) => i.sType === this.filter.type,
-                        //     )
-                        // }
+               
                         this.$forceUpdate()
                     },
                     async dropGoods(item) {
@@ -473,13 +457,20 @@
                         this.$forceUpdate();
                     },
 
-                    attachOrder(){
+                    toCheckout(){
+                        if (!this.totalPrice()) {
+                            return;
+                        }
+
                         localStorage.setItem('currentOrder', JSON.stringify({
                             id: moment().unix(),
                             createTime: moment().format("YYYY-MM-DD hh:mm:ss"),
                             goods: this.currentOrder,
                         }));
+
+                        location.href = 'checkout.html'
                     }
+
                 },
             })
         </script>

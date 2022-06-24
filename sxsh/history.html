@@ -158,45 +158,49 @@
                         <div class="modal-body">
                             <iframe frameborder="0" ref="ticketFrame" class="border " >
                             </iframe>
-                            <div style="width: 250px" class="mx-auto" ref="ticket">
-                            <div class="p-2 border" style="width:98%" >
-                                <h5 class="text-center" style="border-bottom: 1px dashed#000;">欢迎光临盛兴商店</h5>
-                                <div class="d-flex justify-content-between">
-                                    <small class="mb-1">店号: </small>
-                                    <small class="mb-1">NSSKYCL99</small>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <small class="mb-1">流水号: </small>
-                                    <small class="mb-1">{{currentOrder.id}} </small>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <small class="mb-1">交易时间: </small>
-                                    <small class="mb-1">{{currentOrder.finishTime}}</small>
-                                </div>
-                                <table class="table w-100 table-sm mt-1" style="font-size: 14px;">
-                                    <tr>
-                                        <th>商品名称</th>
-                                        <th>单价</th>
-                                        <th>数量</th>
-                                        <th>金额</th>
-                                    </tr>
 
-                                    <template v-for="(g, idx) in Object.values(currentOrder.goods)">
+                            <div style="width:250px" class="m-auto p-1 border" ref="ticketContent">
+                                <div class="head">
+                                    <div class="title text-center" style="border-bottom: 2px dashed #333">
+                                        <h5 style="font-size:18px">欢迎光临</h5>
+                                        <h5 style="font-size:18px">蛇口盛兴商店</h5>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="mb-1">店号: </small>
+                                        <small class="mb-1">NSSKYCL99</small>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="mb-1">流水号: </small>
+                                        <small class="mb-1">{{currentOrder.id}} </small>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="mb-1">交易时间: </small>
+                                        <small class="mb-1">{{currentOrder.finishTime}}</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="body" style="font-size:12px">
+                                    <table class="table w-100 table-sm mt-1" style="font-size: 14px;">
                                         <tr>
-                                            <td colspan="4" class="pb-0">{{g.sName}}</td>
+                                            <th>商品名称</th>
+                                            <th>单价</th>
+                                            <th>数量</th>
+                                            <th>金额</th>
                                         </tr>
-                                        <tr>
-                                            <td style="border:none;" class="pt-0">{{g.sBarCode}}</td>
-                                            <td style="border:none;" class="pt-0">{{g.dPrice}}</td>
-                                            <td style="border:none;" class="pt-0">{{g.iCount}}</td>
-                                            <td style="border:none;" class="pt-0">{{g.iCount * g.dPrice}}</td>
-                                        </tr>
-                                    </template>
-                                   
-                                </table>
+                                        <template v-for="(g, idx) in Object.values(currentOrder.goods)">
+                                            <tr>
+                                                <td colspan="4" class="pb-0">{{g.sName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:none;" class="pt-0">{{g.sBarCode}}</td>
+                                                <td style="border:none;" class="pt-0">{{g.dPrice}}</td>
+                                                <td style="border:none;" class="pt-0">{{g.iCount}}</td>
+                                                <td style="border:none;" class="pt-0">{{g.iCount * g.dPrice}}</td>
+                                            </tr>
+                                        </template>
+                                    </table>
+                                </div>
                             </div>
-                            </div>
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-primary" @click="printTicket()">打印</button>
@@ -280,13 +284,11 @@
                         $('#ticketModal').modal('show')
                     },
                     printTicket(){
-                        this.ticketContent = this.$refs['ticket'].innerHTML
-
                         this.$refs['ticketFrame'].onload = () => {
                             this.$refs['ticketFrame'].contentWindow.print()
                         }
 
-                        this.$refs['ticketFrame'].srcdoc = '<link href="./css/bootstrap.min.css" rel="stylesheet" />'+this.$refs['ticket'].innerHTML
+                        this.$refs['ticketFrame'].srcdoc = '<link href="./css/bootstrap.min.css" rel="stylesheet" />'+this.$refs['ticketContent'].outerHTML
                     },
                     syncUpdate(){
                         localStorage.setItem('order', JSON.stringify(this.order))

@@ -159,7 +159,7 @@ $nav = $(`<nav class="navbar navbar-dark bg-info">
         <a class="nav-link pb-1" href="order.html">订单</a>
     </li>
     <li class="nav-item mr-3" >
-        <a class="nav-link pb-1" href="history.html">历史</a>
+        <a class="nav-link pb-1" href="history.html">账单</a>
     </li>
     <li class="nav-item mr-3" >
         <a class="nav-link pb-1" href="goods.html">商品</a>

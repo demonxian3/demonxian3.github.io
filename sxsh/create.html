@@ -66,6 +66,13 @@
                                     >
                                         <i class="fa fa-mail-reply"></i>
                                     </button>
+                                    <button
+                                        class="btn btn-outline-primary"
+                                        type="button"
+                                        @click="makeCode()"
+                                    >
+                                        <i class="fa fa-plus-square"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -204,6 +211,10 @@
                     },
                 },
                 methods: {
+                    makeCode(){
+                        this.barcode = (new Date()).getTime() + 2e12
+                        this.type = '无条码'
+                    },
                     makePinyin() {
                         if (!this.name) {
                             return

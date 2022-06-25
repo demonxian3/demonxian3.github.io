@@ -159,6 +159,7 @@
                             <iframe frameborder="0" ref="ticketFrame" class="border " >
                             </iframe>
 
+                            <div class="d-none">
                             <div style="width:100%;position: absolute;" class="p-1" ref="ticketContent">
                                 <div class="head">
                                     <div class="title text-center" style="border-bottom: 2px dashed #333">
@@ -200,6 +201,7 @@
                                         </template>
                                     </table>
                                 </div>
+                            </div>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -282,14 +284,13 @@
                 },
                 methods: {
                     showTicketModel(){
+                        this.$refs['ticketFrame'].srcdoc = '<link href="./css/bootstrap.min.css" rel="stylesheet" />'+this.$refs['ticketContent'].outerHTML
                         $('#ticketModal').modal('show')
                     },
                     printTicket(){
                         this.$refs['ticketFrame'].onload = () => {
                             this.$refs['ticketFrame'].contentWindow.print()
                         }
-
-                        this.$refs['ticketFrame'].srcdoc = '<link href="./css/bootstrap.min.css" rel="stylesheet" />'+this.$refs['ticketContent'].outerHTML
                     },
                     printTicket2(){
                        this.$refs['ticketFrame'].contentWindow.print()

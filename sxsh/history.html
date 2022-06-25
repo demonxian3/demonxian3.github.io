@@ -159,11 +159,11 @@
                             <iframe frameborder="0" ref="ticketFrame" class="border " >
                             </iframe>
 
-                            <div style="width:250px" class="m-auto p-1 border" ref="ticketContent">
+                            <div style="width:100%;position: absolute;" class="p-1" ref="ticketContent">
                                 <div class="head">
                                     <div class="title text-center" style="border-bottom: 2px dashed #333">
-                                        <h5 style="font-size:18px">欢迎光临</h5>
-                                        <h5 style="font-size:18px">蛇口盛兴商店</h5>
+                                        <h5 style="font-size:24px">欢迎光临</h5>
+                                        <h5 style="font-size:24px">蛇口盛兴商店</h5>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <small class="mb-1">店号: </small>
@@ -179,13 +179,13 @@
                                     </div>
                                 </div>
                                 
-                                <div class="body" style="font-size:12px">
-                                    <table class="table w-100 table-sm mt-1" style="font-size: 14px;">
+                                <div class="body">
+                                    <table class="table w-100 table-sm mt-1" style="font-size: 20px;">
                                         <tr>
-                                            <th>商品名称</th>
+                                            <th>品名</th>
                                             <th>单价</th>
                                             <th>数量</th>
-                                            <th>金额</th>
+                                            <th>小计</th>
                                         </tr>
                                         <template v-for="(g, idx) in Object.values(currentOrder.goods)">
                                             <tr>

@@ -2,8 +2,6 @@ import { createRouter, createWebHashHistory } from "vue-router"
 import Cashier from '~/pages/Cashier.vue'
 import Goods from "~/pages/Goods.vue"
 import Order from "~/pages/Order.vue"
-import Checkout from "~/pages/Checkout.vue"
-import History from "~/pages/History.vue"
 import Create from "~/pages/Create.vue"
 export const defaultRoute = "goods"
 
@@ -23,20 +21,6 @@ const routes = [
         path: "/order",
         component: Order,
         name: "order",
-        menu: true,
-        meta: { label: "订单" },
-    },
-    {
-        path: "/checkout",
-        component: Checkout,
-        name: "checkout",
-        menu: false,
-        meta: { label: "结算" },
-    },
-    {
-        path: "/history",
-        component: History,
-        name: "history",
         menu: true,
         meta: { label: "账单" },
     },

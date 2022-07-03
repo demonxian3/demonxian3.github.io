@@ -9,7 +9,7 @@
             <a-select-option value="" key="all">所有</a-select-option>
             <a-select-option
                 :key="idx"
-                v-for="(type, idx) in store.getters[GET_GOODSTYPE]"
+                v-for="(type, idx) in getGoodsType()"
                 :value="type"
                 >{{ type }}</a-select-option
             >
@@ -45,20 +45,6 @@
             </template>
         </a-table>  
         <GoodsModalVue ref="goodsModalRef" />
-        <!-- <a-modal 
-            v-model:visible="goodsVisible" 
-            title="商品编辑" 
-            @ok="saveGoods"
-            okText="保存"
-            cancelText="取消"
-            destroyOnClose
-        >
-            <CreateVue 
-                ref="createVueRef" 
-                :barcode="currentBarcode" 
-                :showSubmit='false'
-            />
-        </a-modal> -->
     </div>
 </template>
 
@@ -68,8 +54,12 @@ import store, { STA_GOODS, GET_GOODSTYPE, DEL_GOODSITEM } from "~/config/store.j
 import { onActivated, onMounted, reactive, ref } from "vue"
 import GoodsModalVue from './components/GoodsModal.vue';
 import create from '@ant-design/icons-vue/lib/components/IconFont';
+import useGoods from '~/pages/hooks/useGoods.js';
 
-const columns = reactive([
+let {filter, goodsList, dropGoods, searchGoods, getGoodsType} = useGoods()
+
+const goodsModalRef = ref(null);
+const columns = [ 
     { title: "条码", dataIndex: "sBarCode", key: "sBarCode",width:110, fixed: 'left'},
     { title: "名称", dataIndex: "sName", key: "sName", width:150,  ellipsis: true},
     { title: "类型", dataIndex: "sType", key: "sType", width:100},
@@ -80,31 +70,10 @@ const columns = reactive([
     { title: "标价", dataIndex: "iPricing", key: "iPricing", width:100},
     { title: "拼音", dataIndex: "sPinyin", key: "sPinyin", width:100, ellipsis: true},
     { title: "操作", key: "action", width:80, fixed:'right'},
-])
-const filter = reactive({
-    keyword: "",
-    type: "",
-})
+]
 
-const goodsModalRef = ref(null);
-const goodsList = ref(store.state[STA_GOODS])
 
-const searchGoods = () => {
-    let field = !isNaN(filter.keyword) ? 'sBarCode' : 
-        (/[\u4e00-\u9fa5]+/.test(filter.keyword) ? 'sName' : 'sPinyin')
-    
-    let goods = store.state[STA_GOODS].filter(g => 
-        g[field].toString().toLowerCase().indexOf(filter.keyword.toLowerCase()) >= 0
-        && (filter.type.length ? (g.sType === filter.type) : true)
-    )
-    goodsList.value = goods
-}
 
-const dropGoods = (record) => {
-    store.commit(DEL_GOODSITEM, record.sBarCode)
-}
 
-onActivated(() => {
-    console.log(store.getters[GET_GOODSTYPE])
-})
+
 </script>

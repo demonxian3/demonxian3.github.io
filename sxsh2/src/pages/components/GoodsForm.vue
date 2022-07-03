@@ -3,7 +3,7 @@
         <a-form
             id="goodsForm"
             :model="goodsForm"
-            name="basic"
+            name="goodsForm"
             autocomplete="off"
             @finish="saveGoods"
             class="border w-100% mx-auto p-5 relative"
@@ -132,7 +132,7 @@ import { queryBarcode } from "~/lib/api.js"
 import { debounce } from "~/lib/utils.js"
 import pyutils from "~/lib/pinyin.js"
 import moment from "moment";  
-import { useEvent } from '~/lib/event'
+import useEvent  from '~/pages/hooks/useEvent.js';
 
 let hasListener = false;
 

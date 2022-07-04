@@ -23,9 +23,7 @@
                         <template #title>
                             {{ `${item.count} 件商品，共 ${item.price}元` }}
                         </template>
-                        <template #avatar
-                            ><a-avatar :src="orderSvg"
-                        /></template>
+                        <template #avatar><a-avatar :src="orderSvg" /></template>
                     </a-list-item-meta>
                 </a-list-item>
             </template>

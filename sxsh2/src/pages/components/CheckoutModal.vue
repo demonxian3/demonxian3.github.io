@@ -50,7 +50,8 @@
                             :min="0"
                             :step="1"
                             @click="checkoutData.dCoupon = ''"
-                            @change="updateNeedPay()"
+                            @blur="checkoutData.dCoupon = +checkoutData.dCoupon"
+                            @change="updateRealPay()"
                         />
                     </a-form-item>
                     <a-form-item name="dRealPay" :label="`实付款`">
@@ -59,6 +60,9 @@
                             v-model:value="checkoutData.dRealPay"
                             :step="1"
                             @click="checkoutData.dRealPay = ''"
+                            @blur="
+                                checkoutData.dRealPay = +checkoutData.dRealPay
+                            "
                         />
                     </a-form-item>
                 </a-col>
@@ -102,50 +106,73 @@ import {
     WechatOutlined,
 } from "@ant-design/icons-vue"
 
-import store, {PSH_ORDERITEM} from '~/config/store'
+import store, { USH_ORDERITEM } from "~/config/store"
 import { reactive, ref, toRef, unref } from "@vue/reactivity"
 import { computed } from "@vue/runtime-core"
-import moment from 'moment'
-import { message } from 'ant-design-vue'
-import useCart from '~/pages/hooks/useCart.js';
+import moment from "moment"
+import { message } from "ant-design-vue"
+import useCart from "~/pages/hooks/useCart.js"
+import useNotice from '../hooks/useNotice'
 
-const {
-    getTotalPrice,
-    shopCart,
-} = useCart()
-
+const { getTotalPrice, getTotalCount, shopCart, clearCart } = useCart()
+const { paying } = useNotice()
 const checkoutVisible = ref(false)
 const checkoutData = reactive({
-    dtCreate: moment().format('YYYY-MM-DD hh:mm:ss'),
+    iId: moment().unix(),
+    dtCreate: moment().format("YYYY-MM-DD hh:mm:ss"),
     dNeedPay: 0.0,
     dRealPay: 0.0,
     dChange: 0.0,
     dCoupon: 0.0,
+    iCount: 0,
     sPayway: "scan",
     aGoods: [],
 })
 
 const showCheckoutModal = () => {
     if (!shopCart.length) {
-        message.warning('没有可以结算的商品，无法收款')
-        return;
+        message.warning("没有可以结算的商品，无法收款")
+        return
     }
+
+    cleatCheckoutData()
+    // checkoutData.aGoods.splice(0, checkoutData.aGoods.length);
     checkoutData.dRealPay = checkoutData.dNeedPay = getTotalPrice()
-    checkoutData.aGoods = shopCart
+    checkoutData.iCount = getTotalCount()
+    // shopCart.forEach(goods => checkoutData.aGoods.push(goods))
+    checkoutData.aGoods = shopCart.slice()
+    paying(checkoutData.dNeedPay)
     checkoutVisible.value = true
 }
 
+const cleatCheckoutData = () => {
+    checkoutData.iId = 0
+    checkoutData.dtCreate = ""
+    checkoutData.dNeedPay = 0
+    checkoutData.dRealPay = 0
+    checkoutData.dChange = 0
+    checkoutData.dCoupon = 0
+    checkoutData.iCount = 0
+    checkoutData.aGoods = []
+}
+
 const getCheckoutChange = computed(() => {
-    return checkoutData.dRealPay - checkoutData.dNeedPay
+    return (
+        checkoutData.dRealPay - (checkoutData.dNeedPay - checkoutData.dCoupon)
+    )
 })
 
-const updateNeedPay = () => {
-    checkoutData.dRealPay = checkoutData.dNeedPay = getTotalPrice() - checkoutData.dCoupon
+const updateRealPay = () => {
+    checkoutData.dRealPay = checkoutData.dNeedPay - checkoutData.dCoupon
 }
 
 const commitOrder = () => {
-    store.commit(PSH_ORDERITEM, checkoutData)
-    message.success('收款成功')
+    checkoutData.iId = moment().unix()
+    checkoutData.dtCreate = moment().format("YYYY-MM-DD hh:mm:ss")
+    checkoutData.aGoods = shopCart.slice()
+    store.commit(USH_ORDERITEM, JSON.parse(JSON.stringify(checkoutData)))
+    message.success("收款成功")
+    clearCart()
     checkoutVisible.value = false
 }
 

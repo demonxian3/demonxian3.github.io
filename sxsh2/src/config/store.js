@@ -23,7 +23,7 @@ export const ACT_LOADGOODS = "loadGoods"
 
 export const STA_ORDER = "order"
 export const SET_ORDER = "setOrder"
-export const PSH_ORDERITEM = "setOrderItem"
+export const USH_ORDERITEM = "setOrderItem"
 export const ACT_LOADORDER = "loadOrder"
 
 
@@ -91,8 +91,8 @@ export default createStore({
             }
             localStorage.setItem(STA_GOODS, JSON.stringify(state[STA_GOODS]))
         },
-        [PSH_ORDERITEM](state, item) {
-            state[STA_ORDER].push(item)
+        [USH_ORDERITEM](state, item) {
+            state[STA_ORDER].unshift(item);
             localStorage.setItem(STA_ORDER, JSON.stringify(state[STA_ORDER]))
         },
     },

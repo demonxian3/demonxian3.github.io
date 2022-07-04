@@ -24,6 +24,9 @@ export default () => {
         store.commit(INC_SHOPCART, {index, key:'iCount'})
     }
     const decreseGoods = (index) => {
+        if (shopCart[index].iCount <= 1) {
+            return;
+        }
         store.commit(DEC_SHOPCART, { index, key: "iCount" })
     }
 

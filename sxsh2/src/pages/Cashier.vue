@@ -163,7 +163,7 @@ const selectModalRef = ref(null)
 const backendDrawerRef = ref(null)
 const checkoutModalRef = ref(null)
 
-const columns = reactive([
+const columns = [
     { title: "条码", dataIndex: "sBarCode", key: "sBarCode", width: 110 },
     {
         title: "名称",
@@ -177,7 +177,7 @@ const columns = reactive([
     { title: "数量", dataIndex: "iCount", key: "iCount", width: 55 },
     { title: "小计", dataIndex: "dSubTotal", key: "dSubTotal", width: 55 },
     { title: "操作", dataIndex: "action", key: "action", width: 110 },
-])
+]
 
 const {
     getTotalCount,
@@ -202,9 +202,9 @@ const eventManager = useEvent(
     onDeactivated,
 )
 
-onMounted(() => {
-    console.log(shopCart)
-})
+// onMounted(() => {
+//     console.log(shopCart)
+// })
 
 watch(() => shopCart, () => {console.log(shopCart.length)}) 
 

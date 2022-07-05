@@ -7,8 +7,10 @@ import Jumbotron from "~/pages/Jumbotron.vue"
 import NotFound from "~/pages/NotFound.vue"
 import Layout from "~/pages/Layout.vue"
 import Home from "~/pages/Home.vue"
+import useNotice from '../pages/hooks/useNotice'
 
 export const defaultRoute = "goods"
+const { openNotice } = useNotice()
 
 const routes = [
     {
@@ -19,36 +21,31 @@ const routes = [
                 path: "/",
                 component: Home,
                 name: "home",
-                menu: true,
-                meta: { label: "主页" },
+                meta: { menu: true, label: "主页" },
             },
             {
                 path: "/cashier",
                 component: Cashier,
                 name: "cashier",
-                menu: true,
-                meta: { label: "收银" },
+                meta: { menu: true, label: "收银" },
             },
             {
                 path: "/order",
                 component: Order,
                 name: "order",
-                menu: true,
-                meta: { label: "账单" },
+                meta: { menu: true, label: "账单" },
             },
             {
                 path: "/create",
                 component: Create,
                 name: "create",
-                menu: false,
-                meta: { label: "新增" },
+                meta: { menu: true, label: "新增" },
             },
             {
                 path: "/goods",
                 component: Goods,
                 name: "goods",
-                menu: true,
-                meta: { label: "商品" },
+                meta: { menu: true, label: "商品" },
             },
         ],
     },
@@ -56,8 +53,8 @@ const routes = [
         path: "/jumbotron",
         component: Jumbotron,
         name: "jumbotron",
-        menu: true,
-        meta: { label: "巨幕" },
+        menu: false,
+        meta: { menu: true, label: "投屏", click: openNotice },
     },
     {
         path: "/:pathMatch(.*)*",

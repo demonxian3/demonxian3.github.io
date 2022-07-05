@@ -114,13 +114,13 @@
                     </a-table>
                 </a-card>
                 <a-card size="small" class="mt-2 text-right">
-                    <a-button type="primary" @click="test()" ghost
+                    <a-button type="primary" @click="openNotice" ghost
                         >显示屏</a-button
                     >
                     <a-button type="primary" ghost>打印小票</a-button>
                 </a-card>
             </a-col>
-            <OrderSkeletonDetail v-else/>
+            <OrderSkeletonDetail v-else />
         </a-row>
     </div>
 </template>
@@ -133,16 +133,10 @@ import { reactive, ref } from "@vue/reactivity"
 import { computed, onActivated } from "@vue/runtime-core"
 import OrderSkeletonList from "./components/OrderSkeletonList.vue"
 import OrderSkeletonDetail from "./components/OrderSkeletonDetail.vue"
+import useNotice from "./hooks/useNotice"
 
-const test = () => {
-    const win = window.open(
-        "/#/jumbotron",
-        "_blank",
-        "width=400, height=300, left=1920, top=100",
-    )
+const { openNotice } = useNotice()
 
-    console.log(win)
-}
 
 const filter = reactive({
     keyword: "",

@@ -15,10 +15,13 @@
                 >
                     <a-menu-item
                         :key="route.name"
-                        v-if="route.meta.label"
-                        @click="$router.push(route.path)"
-                        >{{ route.meta.label }}</a-menu-item
-                    >
+                        v-if="route.meta.menu"
+                        @click="
+                            typeof route.meta.click === 'function'
+                                ? route.meta.click()
+                                : $router.push(route.path)
+                        "
+                        >{{ route.meta.label }}</a-menu-item>
                 </template>
             </a-menu>
         </a-layout-header>
@@ -42,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref } from '@vue/reactivity'
+import { ref } from "@vue/reactivity"
 import { useRoute, useRouter } from "vue-router"
 
 const router = useRouter()

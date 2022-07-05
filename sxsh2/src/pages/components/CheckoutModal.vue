@@ -7,6 +7,7 @@
         cancelText="取消"
         destroyOnClose
         width="520px"
+        @cancel="pending"
     >
         <a-form
             id="goodsForm"
@@ -115,7 +116,7 @@ import useCart from "~/pages/hooks/useCart.js"
 import useNotice from '../hooks/useNotice'
 
 const { getTotalPrice, getTotalCount, shopCart, clearCart } = useCart()
-const { paying } = useNotice()
+const { paying, pending, settle } = useNotice()
 const checkoutVisible = ref(false)
 const checkoutData = reactive({
     iId: moment().unix(),
@@ -173,6 +174,7 @@ const commitOrder = () => {
     store.commit(USH_ORDERITEM, JSON.parse(JSON.stringify(checkoutData)))
     message.success("收款成功")
     clearCart()
+    settle();
     checkoutVisible.value = false
 }
 

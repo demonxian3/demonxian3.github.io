@@ -95,12 +95,8 @@ export default (onNotice = null, ms = 1000) => {
     }
 
     const openNotice = () => {
-        const { availWidth } = 1280
-        const { availHeight } = 800
-        const { availLeft } = 1280
-        const { availTop } = 0
-
-        const config = `
+        const openWindow = (availWidth, availHeight, availLeft, availTop) => {
+            const config = `
                 width=${availWidth}, 
                 height=${availHeight}, 
                 left=${availLeft}, 
@@ -108,23 +104,37 @@ export default (onNotice = null, ms = 1000) => {
                 popup=1,
                 location=no
                 `
-        let windowObjectReference = window.open(
-            "/#/jumbotron",
-            "_blank",
-            config,
-        )
-        let timer = setInterval(() => {
-            if (windowObjectReference && !windowObjectReference.closed) {
-                const fullScreen = () =>
-                    !windowObjectReference.document.fullscreenElement &&
-                    windowObjectReference.document.documentElement.requestFullscreen()
-                windowObjectReference.visibilitychange =
-                    windowObjectReference.onload =
-                    windowObjectReference.onfocus =
-                        fullScreen
-                clearInterval(timer)
-            }
-        }, 500)
+            let windowObjectReference = window.open(
+                "/#/jumbotron",
+                "_blank",
+                config,
+            )
+            let timer = setInterval(() => {
+                if (windowObjectReference && !windowObjectReference.closed) {
+                    const fullScreen = () =>
+                        !windowObjectReference.document.fullscreenElement &&
+                        windowObjectReference.document.documentElement.requestFullscreen()
+                    windowObjectReference.visibilitychange =
+                        windowObjectReference.onload =
+                        windowObjectReference.onfocus =
+                            fullScreen
+                    clearInterval(timer)
+                }
+            }, 500)
+        }
+
+        try {
+            getScreenDetails().then((res) => {
+                const bakScreen = res.screens.find((s) => !s.isPrimary)
+                const { availWidth, availHeight, availLeft, availTop } =
+                    bakScreen
+                openWindow(availWidth, availHeight, availLeft, availTop)
+            })
+        } catch (e) {
+            openWindow(1280, 800, 1280, 0)
+            console.log(e)
+        }
+        
     }
 
     return {

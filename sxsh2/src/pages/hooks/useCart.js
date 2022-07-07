@@ -35,8 +35,7 @@ export default () => {
         const index = shopCart.findIndex((g) => g.sBarCode === barcode)
 
         if (!goods) {
-            goodsModalRef.value.showGoodsModal(barcode)
-            return;
+            return false;
         }
 
         index >= 0
@@ -48,6 +47,7 @@ export default () => {
                   dPay: goods.dPrice,
                   iCount: 1,
               })
+        return true;
     }
     const batchJoinCart = (barcodes) => {
         barcodes.forEach(barcode => joinCart(barcode))

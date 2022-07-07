@@ -1,13 +1,12 @@
 <template>
     <a-layout style="min-height: 100vh">
-        <a-layout-header
-            :style="{ position: 'fixed', zIndex: 1, width: '100%' }"
-        >
+        <a-layout-header class="fixed z-1 w-full" >
             <div class="logo">盛兴商店</div>
             <a-menu
                 v-model:selectedKeys="selectedKeys"
                 theme="dark"
                 mode="horizontal"
+                class="select-none"
             >
                 <template
                     v-for="route in $router.getRoutes()"
@@ -21,19 +20,23 @@
                                 ? route.meta.click()
                                 : $router.push(route.path)
                         "
-                        >{{ route.meta.label }}</a-menu-item>
+                        >{{ route.meta.label }}</a-menu-item
+                    >
                 </template>
+                <FullscreenOutlined
+                    class="text-white text-3xl absolute right-5 top-4 cursor-pointer"
+                    @click="toggle"
+                    v-show="!isFullscreen"
+                />
+                <FullscreenExitOutlined
+                    class="text-white text-3xl absolute right-5 top-4 cursor-pointer"
+                    @click="toggle"
+                    v-show="isFullscreen"
+                />
             </a-menu>
         </a-layout-header>
         <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
-            <div
-                :style="{
-                    background: '#fff',
-                    padding: '16px',
-                    height: '100%',
-                    margin: '16px 0 0 0',
-                }"
-            >
+            <div class="bg-white p-15px h-full m-0 mt-16px">
                 <router-view v-slot="{ Component }">
                     <keep-alive>
                         <component :is="Component"></component>
@@ -45,9 +48,15 @@
 </template>
 
 <script setup>
+import {
+    FullscreenExitOutlined,
+    FullscreenOutlined,
+} from "@ant-design/icons-vue"
 import { ref } from "@vue/reactivity"
 import { useRoute, useRouter } from "vue-router"
+import { useFullscreen } from "@vueuse/core"
 
+const { isFullscreen, toggle } = useFullscreen()
 const router = useRouter()
 const currentHash = ref(location.hash.split("#/").pop())
 const selectedKeys = ref([currentHash.value])

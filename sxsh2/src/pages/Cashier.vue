@@ -1,6 +1,6 @@
 <template>
     <a-card>
-        <div class="h-73vh overflow-y-scroll">
+        <div class="h-79vh overflow-y-scroll">
             <a-table
                 :dataSource="shopCart"
                 :columns="columns"
@@ -57,7 +57,9 @@
             <div class="px-3">
                 <div class="cashier-total w-full flex justify-between border-b">
                     <span class="text-lime-600"
-                        >共计{{ shopCart.length }}种{{ getTotalCount() }}件商品</span
+                        >共计{{ shopCart.length }}种{{
+                            getTotalCount()
+                        }}件商品</span
                     >
                     <span class="text-red-600"
                         >总价￥{{ getTotalPrice() }}元</span
@@ -202,13 +204,9 @@ const eventManager = useEvent(
     onDeactivated,
 )
 
-// onMounted(() => {
-//     console.log(shopCart)
-// })
-
-watch(() => shopCart, () => {console.log(shopCart.length)}) 
-
-const handle = eventManager.listenCodeScanGun((barcode) => joinCart(barcode))
+const handle = eventManager.listenCodeScanGun((barcode) => {
+    joinCart(barcode) || goodsModalRef.value.showGoodsModal(barcode)
+})
 eventManager.addEventHandleOnce("keydown", handle, "listen_barcode_input")
 </script>
 

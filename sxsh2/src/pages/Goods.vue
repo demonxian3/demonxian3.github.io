@@ -20,6 +20,7 @@
             enter-button
             @search="searchGoods"
             @change="searchGoods"
+            @click="filter.keyword = ''"
             class="w-100 ml-2"
         />
 

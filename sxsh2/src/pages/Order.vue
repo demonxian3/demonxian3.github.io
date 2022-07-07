@@ -114,9 +114,6 @@
                     </a-table>
                 </a-card>
                 <a-card size="small" class="mt-2 text-right">
-                    <a-button type="primary" @click="openNotice" ghost
-                        >显示屏</a-button
-                    >
                     <a-button type="primary" ghost>打印小票</a-button>
                 </a-card>
             </a-col>
@@ -134,24 +131,10 @@ import { computed, onActivated } from "@vue/runtime-core"
 import OrderSkeletonList from "./components/OrderSkeletonList.vue"
 import OrderSkeletonDetail from "./components/OrderSkeletonDetail.vue"
 import useNotice from "./hooks/useNotice"
+import useOrder from './hooks/useOrder'
 
-const { openNotice } = useNotice()
-
-
-const filter = reactive({
-    keyword: "",
-})
+const { orderList, filter } = useOrder()
 const activeIdx = ref(0)
-
-const orderList = computed(() => {
-    if (filter.keyword) {
-        return store.state[STA_ORDER].filter(
-            (item) => JSON.stringify(item).indexOf(filter.keyword) >= 0,
-        )
-    }
-    return store.state[STA_ORDER]
-})
-
 const columns = [
     { title: "条码", dataIndex: "sBarCode", key: "sBarCode", width: 110 },
     {
@@ -167,7 +150,5 @@ const columns = [
     { title: "小计", dataIndex: "dSubTotal", key: "dSubTotal", width: 55 },
 ]
 
-onActivated(() => {
-    console.log("order get", store.state[STA_ORDER])
-})
+
 </script>

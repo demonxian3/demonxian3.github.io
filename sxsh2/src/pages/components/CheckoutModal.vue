@@ -70,26 +70,15 @@
             </a-row>
 
             <a-form-item name="sPayway" label="付款方式">
-                <a-radio-group v-model:value="checkoutData.sPayway">
-                    <a-radio-button value="scan">
-                        <QrcodeOutlined class="text-dark-500" />
-                        扫码
-                    </a-radio-button>
-                    <a-radio-button value="wechat">
-                        <WechatOutlined class="text-green-400" />
-                        微信
-                    </a-radio-button>
-                    <a-radio-button value="alipat">
-                        <AlipayCircleFilled class="text-blue-500" />
-                        支付宝
-                    </a-radio-button>
-                    <a-radio-button value="cash">
-                        <RedEnvelopeFilled class="text-red-600" />
-                        现金
-                    </a-radio-button>
-                    <a-radio-button value="bank">
-                        <CreditCardFilled class="text-purple-500" />
-                        银联
+                <a-radio-group
+                    v-model:value="checkoutData.sPayway"
+                    @change="
+                        (e) => paying(checkoutData.dNeedPay, e.target.value)
+                    "
+                >
+                    <a-radio-button :value="key" :key="key"  v-for="(item, key) in paywayMap">
+                        <component :is="item.icon" :class="item.color" />
+                        {{item.label}}
                     </a-radio-button>
                 </a-radio-group>
             </a-form-item>
@@ -99,13 +88,7 @@
 </template>
 
 <script setup>
-import {
-    AlipayCircleFilled,
-    CreditCardFilled,
-    QrcodeOutlined,
-    RedEnvelopeFilled,
-    WechatOutlined,
-} from "@ant-design/icons-vue"
+
 
 import store, { USH_ORDERITEM } from "~/config/store"
 import { reactive, ref, toRef, unref } from "@vue/reactivity"
@@ -113,10 +96,10 @@ import { computed } from "@vue/runtime-core"
 import moment from "moment"
 import { message } from "ant-design-vue"
 import useCart from "~/pages/hooks/useCart.js"
-import useNotice from '../hooks/useNotice'
+import useNotice from "../hooks/useNotice"
 
 const { getTotalPrice, getTotalCount, shopCart, clearCart } = useCart()
-const { paying, pending, settle } = useNotice()
+const { paying, pending, settle, paywayMap } = useNotice()
 const checkoutVisible = ref(false)
 const checkoutData = reactive({
     iId: moment().unix(),
@@ -142,7 +125,7 @@ const showCheckoutModal = () => {
     checkoutData.iCount = getTotalCount()
     // shopCart.forEach(goods => checkoutData.aGoods.push(goods))
     checkoutData.aGoods = shopCart.slice()
-    paying(checkoutData.dNeedPay)
+    paying(checkoutData.dNeedPay, checkoutData.sPayway)
     checkoutVisible.value = true
 }
 
@@ -174,7 +157,7 @@ const commitOrder = () => {
     store.commit(USH_ORDERITEM, JSON.parse(JSON.stringify(checkoutData)))
     message.success("收款成功")
     clearCart()
-    settle();
+    settle()
     checkoutVisible.value = false
 }
 

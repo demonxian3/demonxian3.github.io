@@ -29,6 +29,10 @@
         <div class="text-center text-4xl text-white font-bold tracking-wider">
             {{ showContent }} <span v-show="showCursor" class="cursor">|</span>
         </div>
+
+        <div class="mt-5 flex justify-center items-center" v-show="showImage">
+            <img :src="showImage" width="230">
+        </div>
     </div>
 </template>
 
@@ -61,6 +65,7 @@ let timer = 0
 const showStatus = ref(STATUS_PENDING)
 const showContent = ref("")
 const showCursor = ref(false)
+const showImage = ref('')
 
 const getIcon = computed(() => {
     const iconMap = {
@@ -81,11 +86,14 @@ const getColor = computed(() => {
 const onNotice = (message) => {
     const { status } = message
     showStatus.value = status
-    console.log(123, status === STATUS_FINISH)
+     showImage.value = ''
     if (status === STATUS_FINISH) {
         typeContent(`支付成功，欢迎下次光临本店`)
     } else if (status === STATUS_PAYING) {
-        typeContent(`本次消费共计 ￥${message.price} 元， 请扫码或现金支付`)
+        if (paywayMap[message.payway].image) {
+            showImage.value = paywayMap[message.payway].image
+        } 
+        typeContent(`本次消费共计 ￥${message.price} 元， 使用【${paywayMap[message.payway].label}】支付`)
     } else {
         typeContent(`欢迎光临，盛兴商店`)
     }
@@ -115,7 +123,7 @@ const typeContent = (text) => {
     timer = setInterval(func, ms)
 }
 
-let { addTimer, removeTimer } = useNotice(onNotice, 1000)
+let { addTimer, removeTimer, paywayMap } = useNotice(onNotice, 1000)
 
 onMounted(addTimer)
 onUnmounted(removeTimer)

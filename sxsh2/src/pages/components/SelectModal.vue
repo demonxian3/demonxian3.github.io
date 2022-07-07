@@ -5,7 +5,6 @@
         @ok="commitSelected"
         okText="确定"
         cancelText="取消"
-        destroyOnClose
     >
         <a-input-search
             v-model:value="filter.keyword"
@@ -37,7 +36,7 @@
             size="small" 
             class="min-h-310px" 
             rowKey="sBarCode"
-            :dataSource="goodsList.slice(0, 20)" 
+            :dataSource="goodsList.slice(0, 8)" 
             :columns="columns" 
             :scroll="{ x: 720, y: 270 }" 
             :pagination="false"

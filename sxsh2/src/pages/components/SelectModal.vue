@@ -12,6 +12,7 @@
             enter-button
             @search="searchGoods"
             @change="searchGoods"
+            @click="filter.keyword=''"
             class="w-full"
         />
 

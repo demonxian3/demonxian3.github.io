@@ -8,6 +8,7 @@
         destroyOnClose
         width="520px"
         @cancel="pending"
+        :maskClosable="false"
     >
         <a-form
             id="goodsForm"

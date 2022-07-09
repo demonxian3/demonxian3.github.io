@@ -2,7 +2,7 @@
     <a-list
         item-layout="horizontal"
         :data-source="Array(4).fill(0)"
-        class="border h-75vh overflow-y-scroll mt-2 w-full bg-white"
+        class=" h-75vh overflow-y-scroll mt-2 w-full "
         size="small"
     >
         <template #renderItem="{ item, index }">

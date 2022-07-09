@@ -8,7 +8,7 @@ store.dispatch(ACT_LOADGOODS)
 store.dispatch(ACT_LOADORDER)
 </script>
 
-<style>
+<style lang="less">
 .logo {
     content: "盛兴商店";
     color: white;
@@ -30,8 +30,8 @@ store.dispatch(ACT_LOADORDER)
 ::-webkit-scrollbar-thumb {
     /*滚动条里面小方块*/
     border-radius: 5px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #eee;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: rgb(34, 34, 34);
 }
 
 ::-webkit-scrollbar-track {

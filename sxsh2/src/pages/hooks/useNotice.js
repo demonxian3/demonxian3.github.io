@@ -8,12 +8,14 @@ import {
 
 import wechatPay from "~/assets/wechat.png"
 import aliPay from "~/assets/alipay.png"
+import { message } from "ant-design-vue"
 
 export const STATUS_PENDING = 0
 export const STATUS_PAYING = 1
 export const STATUS_FINISH = 2
 
 export default (onNotice = null, ms = 1000) => {
+    let windowObjectReference = null
     let lastMessage = ""
     let noticeTimer = 0
     let listenKey = "message"
@@ -70,7 +72,6 @@ export default (onNotice = null, ms = 1000) => {
     }
     const paying = (price, payway) => {
         clearTimeout(timer)
-        console.log(payway)
         localStorage.setItem(
             listenKey,
             JSON.stringify({ price, payway, status: STATUS_PAYING }),
@@ -104,11 +105,18 @@ export default (onNotice = null, ms = 1000) => {
                 popup=1,
                 location=no
                 `
-            let windowObjectReference = window.open(
+
+            if (windowObjectReference) {
+                message.warning("已经打开过新窗口了")
+                return
+            }
+
+            windowObjectReference = window.open(
                 "/#/jumbotron",
-                "_blank",
+                "newWindow",
                 config,
             )
+
             let timer = setInterval(() => {
                 if (windowObjectReference && !windowObjectReference.closed) {
                     const fullScreen = () =>
@@ -134,7 +142,6 @@ export default (onNotice = null, ms = 1000) => {
             openWindow(1280, 800, 1280, 0)
             console.log(e)
         }
-        
     }
 
     return {

@@ -71,7 +71,7 @@
                 <a-card
                     title="销售额"
                     size="small"
-                    class="hover:shadow bg-white relative"
+                    class="hover:shadow relative"
                 >
                     <template #extra>
                         <a-radio-group v-model:value="timeDimension">
@@ -148,7 +148,6 @@ function getData() {
         .then((res) => {
             option.xAxis.data = res.data.x
             option.series[0].data = res.data.y
-            console.log(res.data.x, res.data.y)
             option && myChart.setOption(option)
         })
         .finally(() => {

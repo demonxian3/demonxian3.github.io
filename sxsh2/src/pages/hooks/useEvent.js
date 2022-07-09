@@ -13,7 +13,6 @@ export default function useEvent(
     const addEventHandleOnce = (e, handle, name) => {
         const listenerSwitch = (bind, hook) => {
             if (bind === hasListener) return
-
             console.log(
                 `${bind ? "add" : "remove"} listener ${name} on ${hook}`,
             )

@@ -36,7 +36,7 @@
             </a-menu>
         </a-layout-header>
         <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
-            <div class="bg-white p-15px h-full m-0 mt-16px">
+            <div class="p-15px h-full m-0 mt-16px">
                 <router-view v-slot="{ Component }">
                     <keep-alive>
                         <component :is="Component"></component>

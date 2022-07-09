@@ -6,7 +6,7 @@
             name="goodsForm"
             autocomplete="off"
             @finish="saveGoods"
-            class="border w-100% mx-auto p-5 relative"
+            class="w-100% mx-auto p-5 relative"
         >
             <a-tag
                 :color="isStorage() ? 'success' : 'blue'"
@@ -71,6 +71,7 @@
                         "
                         placeholder="商品售价"
                         @click="goodsForm.dPrice=''"
+                        @change="goodsForm.dVip=goodsForm.dPrice"
                     />
                 </a-form-item>
                 <a-form-item label="VIP" name="dVip">

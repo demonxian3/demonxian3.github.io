@@ -1,29 +1,32 @@
 <template>
-    <a-modal 
-        v-model:visible="goodsVisible" 
-        :title="currentBarcode ? '商品编辑': '商品新增'" 
+    <a-modal
+        v-model:visible="goodsVisible"
+        :title="currentBarcode ? '商品编辑' : '商品新增'"
         @ok="saveGoods"
         okText="保存"
         cancelText="取消"
         destroyOnClose
-        >
-        <GoodsFormVue 
-            ref="goodsFormRef" 
-            :barcode="currentBarcode" 
-            :showSubmit='false'
+    >
+        <GoodsFormVue
+            ref="goodsFormRef"
+            :barcode="currentBarcode"
+            :showSubmit="false"
         />
     </a-modal>
 </template>
 
 <script setup>
-import { ref } from '@vue/reactivity';
-import GoodsFormVue from './GoodsForm.vue';
+import { ref } from "@vue/reactivity"
+import GoodsFormVue from "./GoodsForm.vue"
+import useGoods from "../hooks/useGoods"
+
+const { searchGoods } = useGoods()
 
 const goodsVisible = ref(false)
-const currentBarcode = ref('')
+const currentBarcode = ref("")
 const goodsFormRef = ref(null)
 
-const showGoodsModal = (barcode = '') => {
+const showGoodsModal = (barcode = "") => {
     currentBarcode.value = barcode
     goodsVisible.value = true
 }
@@ -33,6 +36,7 @@ const saveGoods = () => {
     if (currentBarcode.value) {
         goodsVisible.value = false
     }
+    searchGoods()
 }
 
 const closeGoodsModal = () => {
@@ -40,6 +44,8 @@ const closeGoodsModal = () => {
 }
 
 defineExpose({
-    showGoodsModal,saveGoods,closeGoodsModal
+    showGoodsModal,
+    saveGoods,
+    closeGoodsModal,
 })
 </script>

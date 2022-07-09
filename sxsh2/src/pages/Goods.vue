@@ -24,9 +24,10 @@
             class="w-100 ml-2"
         />
 
-        <div class="border inline-block float-right">
+        <a-space class="float-right">
+             <a-button type="primary" class="bg-teal-500 border-none" @click="exportGoodsJson()">导出</a-button>
              <a-button type="primary" @click="goodsModalRef.showGoodsModal()">新增</a-button>
-        </div>
+        </a-space>
         <a-table 
             :dataSource="goodsList" 
             :columns="columns" 
@@ -57,7 +58,7 @@ import GoodsModalVue from './components/GoodsModal.vue';
 import create from '@ant-design/icons-vue/lib/components/IconFont';
 import useGoods from '~/pages/hooks/useGoods.js';
 
-let {filter, goodsList, dropGoods, searchGoods, getGoodsType} = useGoods()
+let {filter, goodsList, dropGoods, searchGoods, getGoodsType, exportGoodsJson} = useGoods()
 
 const goodsModalRef = ref(null);
 const columns = [ 

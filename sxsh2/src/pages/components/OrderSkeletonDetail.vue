@@ -1,5 +1,5 @@
 <template>
-    <a-col :span="18" class="bg-light-200">
+    <a-col :span="18" class="">
         <a-card size="small">
             <a-descriptions bordered size="small" :column="2">
                 <a-descriptions-item label="订单号">

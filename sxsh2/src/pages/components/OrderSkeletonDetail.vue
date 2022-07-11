@@ -34,7 +34,7 @@
                 </a-descriptions-item>
             </a-descriptions>
         </a-card>
-        <a-card class="mt-2 h-37vh" size="small">
+        <a-card class="mt-2 h-41vh" size="small">
             <a-skeleton :paragraph="{ rows: 7 }" active class="w-full" />
         </a-card>
         <a-card size="small" class="mt-2 text-right">

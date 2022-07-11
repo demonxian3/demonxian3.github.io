@@ -1,12 +1,12 @@
 <template>
     <a-layout style="min-height: 100vh">
-        <a-layout-header class="fixed z-1 w-full" >
+        <a-layout-header class="fixed z-1 w-full">
             <div class="logo">盛兴商店</div>
             <a-menu
                 v-model:selectedKeys="selectedKeys"
-                theme="dark"
+                :theme="store.state[STA_THEME]"
                 mode="horizontal"
-                class="select-none"
+                class="select-none !shadow-none"
             >
                 <template
                     v-for="route in $router.getRoutes()"
@@ -23,13 +23,18 @@
                         >{{ route.meta.label }}</a-menu-item
                     >
                 </template>
+                <a-switch
+                    v-model:checked="darkTheme"
+                    class="absolute right-23 top-5"
+                    @change="changeTheme()"
+                />
                 <FullscreenOutlined
-                    class="text-white text-3xl absolute right-5 top-4 cursor-pointer"
+                    class="fullscreen"
                     @click="toggle"
                     v-show="!isFullscreen"
                 />
                 <FullscreenExitOutlined
-                    class="text-white text-3xl absolute right-5 top-4 cursor-pointer"
+                    class="fullscreen" 
                     @click="toggle"
                     v-show="isFullscreen"
                 />
@@ -55,9 +60,17 @@ import {
 import { ref } from "@vue/reactivity"
 import { useRoute, useRouter } from "vue-router"
 import { useFullscreen } from "@vueuse/core"
+import { onBeforeMount } from '@vue/runtime-core'
+import store, {ACT_LOADTHEME, STA_THEME, SET_THEME} from '../config/store'
 
 const { isFullscreen, toggle } = useFullscreen()
 const router = useRouter()
 const currentHash = ref(location.hash.split("#/").pop())
 const selectedKeys = ref([currentHash.value])
+const darkTheme = ref(store.state[STA_THEME] === 'dark')
+const changeTheme = () => {
+    store.commit(SET_THEME, darkTheme.value ? "dark" : "light")
+}
+
+
 </script>

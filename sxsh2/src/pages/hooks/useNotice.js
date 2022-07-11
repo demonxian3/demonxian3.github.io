@@ -106,9 +106,8 @@ export default (onNotice = null, ms = 1000) => {
                 location=no
                 `
 
-            if (windowObjectReference) {
-                message.warning("已经打开过新窗口了")
-                return
+            if (windowObjectReference && !windowObjectReference) {
+                windowObjectReference.close()
             }
 
             windowObjectReference = window.open(

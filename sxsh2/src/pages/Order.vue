@@ -21,7 +21,7 @@
                             <a-list-item
                                 key="item.title"
                                 class="pl-3 flex flex-col"
-                                :class="{ 'bg-dark-50': activeIdx === index }"
+                                :class="{ actived: activeIdx === index }"
                                 @click="activeIdx = index"
                             >
                                 <a-list-item-meta
@@ -98,7 +98,7 @@
                         </a-descriptions-item>
                     </a-descriptions>
                 </a-card>
-                <a-card class="mt-2 h-42vh" size="small">
+                <a-card class="mt-2 h-50vh" size="small">
                     <a-table
                         size="small"
                         :dataSource="orderList[activeIdx].aGoods"
@@ -157,3 +157,15 @@ const columns = [
     { title: "小计", dataIndex: "dSubTotal", key: "dSubTotal", width: 55 },
 ]
 </script>
+
+<style lang="less" scoped>
+.actived {
+    .theme-light & {
+        @apply bg-blue-100;
+    }
+
+    .theme-dark & {
+        @apply bg-dark-50;
+    }
+}
+</style>

@@ -188,6 +188,8 @@ const typeOptions = ref(
 )
 
 const searchBarcode = async (barcode) => {
+    debugger;
+
     if (!barcode) {
         return
     }

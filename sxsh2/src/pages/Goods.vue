@@ -25,7 +25,7 @@
         />
 
         <a-space class="float-right">
-             <a-button type="primary" class="bg-teal-500 border-none" @click="exportGoodsJson()">导出</a-button>
+             <a-button type="primary" @click="exportGoodsJson()">导出</a-button>
              <a-button type="primary" @click="goodsModalRef.showGoodsModal()">新增</a-button>
         </a-space>
         <a-table 

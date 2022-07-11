@@ -5,6 +5,7 @@ import { AntDesignVueResolver } from "unplugin-vue-components/resolvers"
 import WindiCSS from "vite-plugin-windicss"
 import { getThemeVariables } from "ant-design-vue/dist/theme"
 import path from "path"
+import themePreprocessorPlugin from "@zougt/vite-plugin-theme-preprocessor"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,11 +18,6 @@ export default defineConfig({
         preprocessorOptions: {
             less: {
                 javascriptEnabled: true,
-                modifyVars: {
-                    ...getThemeVariables({
-                        compact: true,
-                    }),
-                },
             },
         },
     },
@@ -30,6 +26,20 @@ export default defineConfig({
         WindiCSS(),
         Components({
             resolvers: [AntDesignVueResolver()],
+        }),
+        themePreprocessorPlugin({
+            less: {
+                multipleScopeVars: [
+                    {
+                        scopeName: "theme-light",
+                        path: path.resolve("src/theme/light.less"),
+                    },
+                    {
+                        scopeName: "theme-dark",
+                        path: path.resolve("src/theme/dark.less"),
+                    },
+                ],
+            },
         }),
     ],
 })

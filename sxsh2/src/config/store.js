@@ -1,7 +1,10 @@
 import { createStore } from "vuex"
 import goodList from "~/data/goods.js"
 import orderList from "~/data/order.js"
+import { toggleTheme } from "@zougt/vite-plugin-theme-preprocessor/dist/browser-utils.js"
 
+export const STA_THEME = "theme"
+export const STA_ISDARK = "isDarkTheme"
 export const STA_SHOPCART = "shopCart"
 export const SET_SHOPCART = "setShopCart"
 export const DEL_SHOPCART = "delShopCart"
@@ -24,8 +27,9 @@ export const ACT_LOADGOODS = "loadGoods"
 export const STA_ORDER = "order"
 export const SET_ORDER = "setOrder"
 export const USH_ORDERITEM = "setOrderItem"
+export const SET_THEME = "setTheme"
 export const ACT_LOADORDER = "loadOrder"
-
+export const ACT_LOADTHEME = "loadTheme"
 
 export const GET_GOODSTYPE = "getGoodsType"
 
@@ -36,6 +40,7 @@ export default createStore({
             [STA_ORDER]: [],
             [STA_SHOPCART]: [],
             [STA_BACKCARTS]: [],
+            [STA_ISDARK]: false,
         }
     },
     mutations: {
@@ -47,6 +52,13 @@ export default createStore({
         },
         [SET_SHOPCART](state, info) {
             state[STA_SHOPCART] = info
+        },
+        [SET_THEME](state, theme) {
+            state[STA_THEME] = theme
+            toggleTheme({
+                scopeName: theme === "dark" ? "theme-dark" : "theme-light",
+            })
+            localStorage.setItem(STA_THEME, theme)
         },
         [CLS_SHOPCART](state) {
             state[STA_SHOPCART].splice(0, state[STA_SHOPCART].length)
@@ -92,7 +104,7 @@ export default createStore({
             localStorage.setItem(STA_GOODS, JSON.stringify(state[STA_GOODS]))
         },
         [USH_ORDERITEM](state, item) {
-            state[STA_ORDER].unshift(item);
+            state[STA_ORDER].unshift(item)
             localStorage.setItem(STA_ORDER, JSON.stringify(state[STA_ORDER]))
         },
     },
@@ -124,6 +136,10 @@ export default createStore({
                 localStorage.setItem(STA_ORDER, JSON.stringify(order))
             }
             commit(SET_ORDER, order)
+        },
+        [ACT_LOADTHEME]({ commit }) {
+            const theme = localStorage.getItem("theme")
+            commit(SET_THEME, theme || "light")
         },
     },
     getters: {

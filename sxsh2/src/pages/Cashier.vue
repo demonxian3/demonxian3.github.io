@@ -1,6 +1,6 @@
 <template>
-    <a-card>
-        <div class="h-79vh overflow-y-scroll">
+    <a-card size="small">
+        <div class="h-68vh overflow-y-scroll">
             <a-table
                 :dataSource="shopCart"
                 :columns="columns"
@@ -53,15 +53,82 @@
                 </template>
             </a-table>
         </div>
-        <div class="absolute bottom-0 p-2 w-full left-0 bg-indigo-50">
+        <a-card
+            size="small"
+           
+        >
+            <template #title> 
+                <span class="text-3xl text-indigo-400">共计 {{shopCart.length}} 种 {{getTotalCount()}} 件商品</span>
+            </template>
+
+            <template #extra> 
+                <span class="text-3xl text-red-400">总价 ￥{{ getTotalPrice() }} 元 </span>
+            </template>
+            <div class="flex justify-between select-none ">
+                <a-space>
+                    <a-button
+                        type="primary"
+                        class="!bg-cyan-400 border-none"
+                        @click="goodsModalRef.showGoodsModal()"
+                    >
+                        <template #icon><AppstoreAddOutlined /></template>
+                        新增
+                    </a-button>
+                    <a-button
+                        type="primary"
+                        class="!bg-orange-600 border-none"
+                        @click="selectModalRef.showSelectModal()"
+                    >
+                        <template #icon><DatabaseFilled /></template>
+                        选品
+                    </a-button>
+                    <a-button
+                        type="primary"
+                        class="!bg-lime-600 border-none"
+                        @click="backendDrawerRef.showBackendDrawer()"
+                    >
+                        <template #icon><DesktopOutlined /></template>
+                        后台
+                    </a-button>
+                </a-space>
+                <a-space>
+                    <a-button
+                        type="primary"
+                        class="!bg-teal-600 border-none"
+                        @click="clearCart"
+                    >
+                        <template #icon><DeleteFilled /></template>
+                        清空
+                    </a-button>
+                    <a-button
+                        type="primary"
+                        class="!bg-pink-600 border-none"
+                        @click="detachCart"
+                    >
+                        <template #icon><GatewayOutlined /></template>
+                        挂单
+                    </a-button>
+                    <a-button
+                        type="primary"
+                        class="!bg-red-700 border-none"
+                        @click="checkoutModalRef.showCheckoutModal()"
+                    >
+                        <template #icon><DollarOutlined /></template>
+                        收款
+                    </a-button>
+                </a-space>
+            </div>
+        </a-card>
+
+        <div class="absolute bottom-0 p-2 w-full left-0 bg-indigo-50 hidden">
             <div class="px-3">
-                <div class="cashier-total w-full flex justify-between border-b">
-                    <span class="text-lime-600"
+                <div class="cashier-total w-full flex justify-between border-b ">
+                    <span class="text-lime-600 font-bold"
                         >共计{{ shopCart.length }}种{{
                             getTotalCount()
                         }}件商品</span
                     >
-                    <span class="text-red-600"
+                    <span class="text-red-600 font-bold"
                         >总价￥{{ getTotalPrice() }}元</span
                     >
                 </div>

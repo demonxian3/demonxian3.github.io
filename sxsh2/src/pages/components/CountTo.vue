@@ -1,5 +1,5 @@
 <template>
-    {{ data.num }}
+    {{ data.num.toFixed(fixed) }}
 </template>
 
 <script setup>
@@ -15,6 +15,10 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    fixed: {
+        type: Number,
+        default: 0,
+    }
 })
 
 function AnimateCountTo() {

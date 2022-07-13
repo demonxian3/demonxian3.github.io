@@ -19,7 +19,7 @@
 import { ref } from "@vue/reactivity"
 import GoodsFormVue from "./GoodsForm.vue"
 import useGoods from "../hooks/useGoods"
-
+const emit = defineEmits(['save'])
 const { searchGoods } = useGoods()
 
 const goodsVisible = ref(false)
@@ -36,7 +36,7 @@ const saveGoods = () => {
     if (currentBarcode.value) {
         goodsVisible.value = false
     }
-    searchGoods()
+    emit('save')
 }
 
 const closeGoodsModal = () => {

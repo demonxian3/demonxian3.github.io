@@ -40,9 +40,9 @@ export default function useEvent(
 
             timer = debounce(() => {
                 timer = 0
-                if (e.key === "Enter") {
-                    callback(scanResult)
-                }
+                // if (e.key === "Enter") {
+                callback(scanResult)
+                // }
             }, timer)
         }
     } 

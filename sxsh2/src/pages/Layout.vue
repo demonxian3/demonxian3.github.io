@@ -4,7 +4,7 @@
             <div class="logo">盛兴商店</div>
             <a-menu
                 v-model:selectedKeys="selectedKeys"
-                :theme="store.state[STA_THEME]"
+                theme="dark"
                 mode="horizontal"
                 class="select-none !shadow-none"
             >
@@ -66,7 +66,7 @@ import store, {ACT_LOADTHEME, STA_THEME, SET_THEME} from '../config/store'
 const { isFullscreen, toggle } = useFullscreen()
 const router = useRouter()
 const currentHash = ref(location.hash.split("#/").pop())
-const selectedKeys = ref([currentHash.value])
+const selectedKeys = ref([currentHash.value || 'home'])
 const darkTheme = ref(store.state[STA_THEME] === 'dark')
 const changeTheme = () => {
     store.commit(SET_THEME, darkTheme.value ? "dark" : "light")

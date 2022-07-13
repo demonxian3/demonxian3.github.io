@@ -68,7 +68,6 @@
                 <a-space>
                     <a-button
                         type="primary"
-                        class="!bg-cyan-400 border-none"
                         @click="goodsModalRef.showGoodsModal()"
                     >
                         <template #icon><AppstoreAddOutlined /></template>

@@ -144,12 +144,7 @@
                                                 :count="index + 1"
                                                 show-zero
                                                 class="mr-3"
-                                                :number-style="{
-                                                    backgroundColor:
-                                                        index < 3
-                                                            ? '#2c3e4e'
-                                                            : '#262626',
-                                                }"
+                                                :number-style="getRankStyle(index)"
                                         /></span>
                                         <span>{{ item.name }}</span>
                                     </span>
@@ -173,7 +168,7 @@
                         :dataSource="dataSource"
                         :columns="columns"
                         size="small"
-                        :scroll="{y: 105}"
+                        :scroll="{ y: 105 }"
                     />
                 </a-card>
             </a-col>
@@ -206,6 +201,7 @@ import {
     CaretUpFilled,
     InfoCircleOutlined,
 } from "@ant-design/icons-vue"
+import store, { STA_THEME } from "../config/store"
 const { orderList } = useOrder()
 const options = [
     { label: "今日", value: "day" },
@@ -225,6 +221,12 @@ const salesRank = [
     { name: "可口可乐250ml", price: 3271.32 },
     { name: "可口可乐250ml", price: 3271.32 },
 ]
+
+const getRankStyle = (index) => 
+    store.state.STA_THEME === 'dark'
+        ? {backgroundColor: index < 3 ? "#2c3e4e" : "#262626"}
+        : {backgroundColor: index < 3 ? "orange" : "gray"}
+    
 
 const columns = [
     {
@@ -250,12 +252,12 @@ const columns = [
 ]
 
 const dataSource = [
-    {name: '王老吉凉茶', count: 372, rate: '32%', rank: 1},
-    {name: '王老吉凉茶', count: 372, rate: '32%', rank: 2},
-    {name: '王老吉凉茶', count: 372, rate: '32%', rank: 3},
-    {name: '王老吉凉茶', count: 372, rate: '32%', rank: 4},
-    {name: '王老吉凉茶', count: 372, rate: '32%', rank: 5},
-    {name: '王老吉凉茶', count: 372, rate: '32%', rank: 6},
+    { name: "王老吉凉茶", count: 372, rate: "32%", rank: 1 },
+    { name: "王老吉凉茶", count: 372, rate: "32%", rank: 2 },
+    { name: "王老吉凉茶", count: 372, rate: "32%", rank: 3 },
+    { name: "王老吉凉茶", count: 372, rate: "32%", rank: 4 },
+    { name: "王老吉凉茶", count: 372, rate: "32%", rank: 5 },
+    { name: "王老吉凉茶", count: 372, rate: "32%", rank: 6 },
 ]
 </script>
 

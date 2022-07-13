@@ -22,13 +22,19 @@
                         style="width: calc(100% - 32px)"
                         placeholder="商品条码"
                         @focus="goodsForm.sBarCode = ''"
-                        @blur="searchBarcode(goodsForm.sBarCode)"
-                        @pressEnter="(e)=>pd(e, ()=>{searchBarcode(goodsForm.sBarCode)})"
-                           
+                        @blur="queryBarcode(goodsForm.sBarCode)"
+                        @pressEnter="
+                            (e) =>
+                                pd(e, () => {
+                                    queryBarcode(goodsForm.sBarCode)
+                                })
+                        "
                     />
                     <a-tooltip title="无码商品生成条码">
-                        <a-button :disabled="!!props.barcode.length" >
-                            <template #icon><CodeSandboxOutlined @click="makeCode"/></template>
+                        <a-button :disabled="!!props.barcode.length">
+                            <template #icon
+                                ><CodeSandboxOutlined @click="makeCode"
+                            /></template>
                         </a-button>
                     </a-tooltip>
                 </a-input-group>
@@ -70,8 +76,8 @@
                             }
                         "
                         placeholder="商品售价"
-                        @click="goodsForm.dPrice=''"
-                        @change="goodsForm.dVip=goodsForm.dPrice"
+                        @click="goodsForm.dPrice = ''"
+                        @change="goodsForm.dVip = goodsForm.dPrice"
                     />
                 </a-form-item>
                 <a-form-item label="VIP" name="dVip">
@@ -110,13 +116,16 @@
                     show-search
                     placeholder="商品规格"
                     :options="typeOptions"
-                    @focus="goodsForm.sType = []"
                     @select="handleSelect"
                     mode="tags"
+                    ref="typeSelectRef"
                 ></a-select>
             </a-form-item>
 
-            <a-form-item :wrapper-col="{ offset: 8, span: 16 }" v-if="props.showSubmit" >
+            <a-form-item
+                :wrapper-col="{ offset: 8, span: 16 }"
+                v-if="props.showSubmit"
+            >
                 <a-button type="primary" html-type="submit">提交</a-button>
             </a-form-item>
         </a-form>
@@ -124,181 +133,111 @@
 </template>
 
 <script setup>
-import { message } from "ant-design-vue"
 import { reactive, ref } from "@vue/reactivity"
 import { CodeSandboxOutlined } from "@ant-design/icons-vue"
-import store, { GET_GOODSTYPE, STA_GOODS, SET_GOODSITEM } from "~/config/store.js"
-import { computed, onActivated, onBeforeMount, onDeactivated, onUnmounted, watch } from "@vue/runtime-core"
-import { queryBarcode } from "~/lib/api.js"
-import { debounce } from "~/lib/utils.js"
-import pyutils from "~/lib/pinyin.js"
-import moment from "moment";  
-import useEvent  from '~/pages/hooks/useEvent.js';
+import useEvent from "~/pages/hooks/useEvent.js"
+import useGoods from "~/pages/hooks/useGoods.js"
+import {
+    computed,
+    onActivated,
+    onBeforeMount,
+    onDeactivated,
+    onUnmounted,
+    watch,
+} from "@vue/runtime-core"
 
-let hasListener = false;
+const {
+    goodsForm,
+    loading,
+    queryBarcode,
+    makeCode,
+    saveGoods,
+    isStorage,
+    makePinyin,
+    getGoodsType,
+} = useGoods()
 
-const goodsForm = reactive({
-    sBarCode: "",
-    sName: "",
-    sPinyin: "",
-    sType: [],
-    sSpec: "",
-    dPrice: 0.0,
-    dVip: 0.0,
-    dCost: 0.0,
-    sPinyin: "",
+const typeSelectRef = ref(null)
+const typeWeight = reactive({
+    无条码: 0,
+    零食: 0,
+    啤酒: 0,
+    国内烟草: 0,
+    果汁: 0,
+    奶茶: 0,
+    牛奶: 0,
+    方便面: 0,
+    茶饮料: 0,
+    白酒: 0,
+    汽水: 0,
+    矿泉水: 0,
+    功能饮料: 0,
+    雪糕: 0,
+    日用品: 0,
+    鸡尾酒: 0,
+    出口烟草: 0,
+    进口烟草: 0,
+    洋酒: 0,
+    红酒: 0,
+    无分类: 0,
+    医疗用品: 0,
 })
-
-const loading = ref(false)
-
 const barcodeDisabled = ref(false)
+const currentWeight = ref(0)
 
-const isStorage = () => {
-    return !!store.state[STA_GOODS].find(g => g.sBarCode === goodsForm.sBarCode)
-}
-
-const saveGoods = () => {
-    const saveData = JSON.parse(JSON.stringify(goodsForm))
-
-    if (!saveData.sName || !saveData.sName) {
-        message.error('商品条码或商品名称不能为空')
-        return
-    }
-
-    saveData.sType = saveData.sType.join('')
-    saveData.dPrice = (+saveData.dPrice).toFixed(2)
-    saveData.dCost = (+saveData.dCost).toFixed(2)
-    saveData.dVip = (+saveData.dVip).toFixed(2)
-    saveData.dVip = (+saveData.dVip).toFixed(2)
-
-    saveData.dtCreateTime = moment().format("YYYY-MM-DD hh:mm:ss")
-    saveData.dtUpdateTime = moment().format("YYYY-MM-DD hh:mm:ss")
-    saveData.iStatus = 1
-
-    store.commit(SET_GOODSITEM, saveData);
-    message.success('保存成功')
-}
-
+// 根据点击次数增加权重，提高排名而置顶
 const handleSelect = (value) => {
+    currentWeight.value += 1
+    typeWeight[value] = currentWeight.value
+    typeSelectRef.value.blur()
     goodsForm.sType = [value]
 }
 
-const typeOptions = ref(
-    store.getters[GET_GOODSTYPE].map((g) => ({ value: g, label: g })),
-)
-
-const searchBarcode = async (barcode) => {
-    debugger;
-
-    if (!barcode) {
-        return
-    }
-
-    loading.value = true;
-    // 如果在 localStorage,优先返回
-    const fetchGoods = store.state[STA_GOODS].find(
-        (g) => g.sBarCode === barcode,
-    )
-    if (fetchGoods) {
-        goodsForm.sBarCode = fetchGoods.sBarCode
-        goodsForm.sName = fetchGoods.sName
-        goodsForm.sPinyin = fetchGoods.sPinyin
-        goodsForm.sType = fetchGoods.sType.split(',')
-        goodsForm.sSpec = fetchGoods.sSpec
-        goodsForm.dPrice = fetchGoods.dPrice
-        goodsForm.dVip = fetchGoods.dVip
-        goodsForm.dCost = fetchGoods.dCost
-        goodsForm.iPricing = fetchGoods.iPricing
-        goodsForm.sPinyin = fetchGoods.sPinyin
-        goodsForm.action = fetchGoods.action
-        loading.value = false;
-        return
-    }
-
-    try {
-        const reply = await queryBarcode(barcode)
-        if (reply.data.code === 1) {
-            goodsForm.sType = []
-            goodsForm.sBarCode = reply.data.data.barcode
-            goodsForm.dPrice = reply.data.data.price
-            goodsForm.sSpec = reply.data.data.standard
-            goodsForm.sName = reply.data.data.goodsName
-        }
-    } finally {
-        loading.value = false;
-    }
-    
-}
-
-const listenBarcode = () => {
-    let timer = 0
-    let barcode = ""
-    return (e) => {
-        if (document.activeElement.tagName !== "INPUT") {
-            if (!timer) {
-                barcode = ""
-            }
-
-            if (e.key.length === 1) {
-                barcode += e.key
-            }
-
-            timer = debounce(() => {
-                timer = 0
-                if (e.key === "Enter") {
-                    searchBarcode(barcode)
-                }
-            }, timer)
-        }
-    }
-}
-
-const makeCode = () => {
-    goodsForm.sBarCode = (new Date()).getTime() + 2e12
-    goodsForm.sType = ['无条码']
-    goodsForm.sName = goodsForm.sPinyin = goodsForm.sSpec = '';
-}
+const typeOptions = computed(() => {
+    return getGoodsType(typeWeight).map((g) => ({ value: g, label: g }))
+})
 
 //fuck 表单回车自动提交
 const pd = (e, fn) => {
-    e.preventDefault();
-    if (typeof fn === 'function') {
-        fn();
+    e.preventDefault()
+    if (typeof fn === "function") {
+        fn()
     }
 }
 
 const props = defineProps({
     barcode: {
         type: String,
-        default: '',
+        default: "",
     },
     showSubmit: {
         type: Boolean,
         default: true,
-    }
+    },
 })
 
-defineExpose({saveGoods})
+defineExpose({ saveGoods })
 
-watch(
-    () => goodsForm.sName,
-    (cur, prev) => {
-        goodsForm.sPinyin = pyutils.chineseToFirstLetter(cur)
-    },
-)
+watch( () => goodsForm.sName, makePinyin )
 
 if (!props.barcode) {
-    const eventManager = useEvent(onBeforeMount, onUnmounted, onActivated, onDeactivated)
-    const handle = eventManager.listenCodeScanGun(barcode => searchBarcode(barcode))
-    eventManager.addEventHandleOnce('keydown', handle, 'listen_barcode_input')
+    const eventManager = useEvent(
+        onBeforeMount,
+        onUnmounted,
+        onActivated,
+        onDeactivated,
+    )
+    const handle = eventManager.listenCodeScanGun((barcode) =>
+        queryBarcode(barcode),
+    )
+    eventManager.addEventHandleOnce("keydown", handle, "listen_barcode_input")
 } else {
     onBeforeMount(() => {
         goodsForm.sBarCode = props.barcode
-        searchBarcode(goodsForm.sBarCode)
-        barcodeDisabled.value = true;
+        queryBarcode(goodsForm.sBarCode)
+        barcodeDisabled.value = true
     })
 }
-
 </script>
 
 <style lang="less"></style>

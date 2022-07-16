@@ -34,7 +34,7 @@
 <script setup>
 import { ref, reactive } from "@vue/reactivity"
 import orderSvg from "~/assets/order.svg"
-import useCart from "~/pages/hooks/useCart.js"
+import useCart from "~/hooks/useCart.js"
 const backendVisible = ref(false)
 const {
     backCarts,

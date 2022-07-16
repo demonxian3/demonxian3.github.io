@@ -17,7 +17,7 @@
         <div
             class="border-y py-7 w-3/5 m-auto text-7xl text-white text-center mt-30"
         >
-            欢迎光临盛兴商店
+            欢迎光临{{setting.storeName}}
         </div>
 
         <div class="flex justify-center items-center my-7">
@@ -56,9 +56,10 @@ import useNotice, {
     STATUS_PENDING,
     STATUS_PAYING,
     STATUS_FINISH,
-} from "./hooks/useNotice"
+} from "~/hooks/useNotice"
 
 import { useFullscreen } from "@vueuse/core"
+import setting from '../config/setting'
 const { isFullscreen, toggle } = useFullscreen()
 
 let timer = 0

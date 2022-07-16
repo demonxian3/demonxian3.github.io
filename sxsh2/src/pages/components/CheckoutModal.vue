@@ -96,8 +96,8 @@ import { reactive, ref, toRef, unref } from "@vue/reactivity"
 import { computed } from "@vue/runtime-core"
 import moment from "moment"
 import { message } from "ant-design-vue"
-import useCart from "~/pages/hooks/useCart.js"
-import useNotice from "../hooks/useNotice"
+import useCart from "~/hooks/useCart.js"
+import useNotice from "~/hooks/useNotice"
 
 const { getTotalPrice, getTotalCount, shopCart, clearCart } = useCart()
 const { paying, pending, settle, paywayMap } = useNotice()

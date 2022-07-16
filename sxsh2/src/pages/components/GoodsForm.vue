@@ -135,8 +135,8 @@
 <script setup>
 import { reactive, ref } from "@vue/reactivity"
 import { CodeSandboxOutlined } from "@ant-design/icons-vue"
-import useEvent from "~/pages/hooks/useEvent.js"
-import useGoods from "~/pages/hooks/useGoods.js"
+import useEvent from "~/hooks/useEvent.js"
+import useGoods from "~/hooks/useGoods.js"
 import {
     computed,
     onActivated,

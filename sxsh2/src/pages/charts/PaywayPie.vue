@@ -65,7 +65,6 @@ useResizeObserver(el, (entries) => {
 watch(
     () => store.state[STA_THEME],
     () => {
-        console.log(options)
         options.legend.textStyle.color = getTextColor()
         options.series[0].label.color = getTextColor()
         myChart.setOption(options)

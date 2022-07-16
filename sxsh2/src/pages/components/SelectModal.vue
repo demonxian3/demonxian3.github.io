@@ -54,7 +54,7 @@
 import { QrcodeOutlined, ScanOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from "@vue/reactivity"
 import { computed } from '@vue/runtime-core'
-import useGoods from "~/pages/hooks/useGoods.js"
+import useGoods from "~/hooks/useGoods.js"
 let { filter, goodsList, dropGoods, searchGoods, getGoodsType } = useGoods()
 
 const selectVisible = ref(false)

@@ -7,7 +7,7 @@ import store, {
     GET_GOODSTYPE,
 } from "~/config/store.js"
 import moment from "moment"
-import { download } from "../../lib/utils"
+import { download } from "~/lib/utils"
 import { queryBarcodeAPI } from "~/lib/api.js"
 import pyutils from "~/lib/pinyin.js"
 export default () => {
@@ -66,7 +66,6 @@ export default () => {
     }
 
     const searchGoods = () => {
-        console.log('search goods')
         let field = !isNaN(filter.keyword)
             ? "sBarCode"
             : /[\u4e00-\u9fa5]+/.test(filter.keyword)
@@ -172,7 +171,6 @@ export default () => {
     }
 
     const makePinyin = () => {
-        console.log(345)
         goodsForm.sPinyin = pyutils.chineseToFirstLetter(goodsForm.sName)
     }
 

@@ -137,8 +137,8 @@ import { reactive, ref } from "@vue/reactivity"
 import { computed, onActivated } from "@vue/runtime-core"
 import OrderSkeletonList from "./components/OrderSkeletonList.vue"
 import OrderSkeletonDetail from "./components/OrderSkeletonDetail.vue"
-import useNotice from "./hooks/useNotice"
-import useOrder from "./hooks/useOrder"
+import useNotice from "~/hooks/useNotice"
+import useOrder from "~/hooks/useOrder"
 
 const { orderList, filter, exportOrderJson } = useOrder()
 const activeIdx = ref(0)

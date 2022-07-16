@@ -1,7 +1,7 @@
 import { reactive, ref } from "vue"
 import { computed, onActivated } from "@vue/runtime-core"
 import store, { STA_ORDER } from "~/config/store.js"
-import { download } from '../../lib/utils'
+import { download } from '~/lib/utils'
 
 export default () => {
     const filter = reactive({
@@ -18,6 +18,8 @@ export default () => {
         return store.state[STA_ORDER]
     })
 
+    const orders = store.state[STA_ORDER]
+
 
     const exportOrderJson = () => {
         download(
@@ -28,6 +30,7 @@ export default () => {
 
     return {
         exportOrderJson,
+        orders,
         filter,
         orderList,
     }

@@ -9,18 +9,33 @@
             >
                 <template #bodyCell="{ column, record, index }">
                     <!-- TODO 数量可编辑 -->
-                    <!-- <template v-if="column.key === 'iCount'">
-                    <div class="editable-cell">
-                        <div v-if="editableData[record.key]" class="editable-cell-input-wrapper">
-                            <a-input v-model:value="editableData[record.key].name" @pressEnter="save(record.key)" />
-                            <check-outlined class="editable-cell-icon-check" @click="save(record.key)" />
+                    <template v-if="column.key === 'iCount'">
+                        <div class="editable-cell">
+                            <div
+                                v-if="editableData[index]"
+                                class="editable-cell-input-wrapper"
+                            >
+                               <a-input-number
+                                    class="w-70px"
+                                    :step="0.5"
+                                    size="small"
+                                    v-model:value="editableData[index].iCount"
+                                    @pressEnter="saveCount(index)"
+                                />
+                                <CheckOutlined
+                                    class="editable-cell-icon-check"
+                                    @click="saveCount(index)"
+                                />
+                            </div>
+                            <div v-else class="editable-cell-text-wrapper">
+                                {{ record.iCount || " " }}
+                                <EditOutlined
+                                    class="editable-cell-icon"
+                                    @click="editCount(index)"
+                                />
+                            </div>
                         </div>
-                        <div v-else class="editable-cell-text-wrapper">
-                            {{ text || ' ' }}
-                            <edit-outlined class="editable-cell-icon" @click="edit(record.key)" />
-                        </div>
-                    </div>
-                </template> -->
+                    </template>
 
                     <template v-if="column.key === 'dSubTotal'">
                         {{ record.iCount * record.dPay }}
@@ -53,18 +68,20 @@
                 </template>
             </a-table>
         </div>
-        <a-card
-            size="small"
-           
-        >
-            <template #title> 
-                <span class="text-3xl text-indigo-400">共计 {{shopCart.length}} 种 {{getTotalCount()}} 件商品</span>
+        <a-card size="small">
+            <template #title>
+                <span class="text-3xl text-indigo-400"
+                    >共计 {{ shopCart.length }} 种
+                    {{ getTotalCount() }} 件商品</span
+                >
             </template>
 
-            <template #extra> 
-                <span class="text-3xl text-red-400">总价 ￥{{ getTotalPrice() }} 元 </span>
+            <template #extra>
+                <span class="text-3xl text-red-400"
+                    >总价 ￥{{ getTotalPrice() }} 元
+                </span>
             </template>
-            <div class="flex justify-between select-none ">
+            <div class="flex justify-between select-none">
                 <a-space>
                     <a-button
                         type="primary"
@@ -121,7 +138,7 @@
 
         <div class="absolute bottom-0 p-2 w-full left-0 bg-indigo-50 hidden">
             <div class="px-3">
-                <div class="cashier-total w-full flex justify-between border-b ">
+                <div class="cashier-total w-full flex justify-between border-b">
                     <span class="text-lime-600 font-bold"
                         >共计{{ shopCart.length }}种{{
                             getTotalCount()
@@ -206,6 +223,8 @@ import {
     GatewayOutlined,
     PlusSquareOutlined,
     DesktopOutlined,
+    EditOutlined,
+    CheckOutlined,
 } from "@ant-design/icons-vue"
 import GoodsModalVue from "./components/GoodsModal.vue"
 import SelectModalVue from "./components/SelectModal.vue"
@@ -222,15 +241,15 @@ import {
     ref,
     watch,
 } from "vue"
-import useCart from "~/pages/hooks/useCart.js"
-import useEvent from "~/pages/hooks/useEvent.js"
+import useCart from "~/hooks/useCart.js"
+import useEvent from "~/hooks/useEvent.js"
 import orderSvg from "~/assets/order.svg"
 
 const goodsModalRef = ref(null)
 const selectModalRef = ref(null)
 const backendDrawerRef = ref(null)
 const checkoutModalRef = ref(null)
-
+const editableData = reactive({})
 const columns = [
     { title: "条码", dataIndex: "sBarCode", key: "sBarCode", width: 110 },
     {
@@ -242,7 +261,7 @@ const columns = [
     },
     { title: "原价", dataIndex: "dPrice", key: "dPrice", width: 55 },
     { title: "售价", dataIndex: "dPay", key: "dPay", width: 55 },
-    { title: "数量", dataIndex: "iCount", key: "iCount", width: 55 },
+    { title: "数量", dataIndex: "iCount", key: "iCount", width: 78 },
     { title: "小计", dataIndex: "dSubTotal", key: "dSubTotal", width: 55 },
     { title: "操作", dataIndex: "action", key: "action", width: 110 },
 ]
@@ -269,6 +288,15 @@ const eventManager = useEvent(
     onActivated,
     onDeactivated,
 )
+
+const editCount = (index) => {
+    editableData[index] = JSON.parse(JSON.stringify(shopCart[index]))
+}
+
+const saveCount = (index) => {
+    Object.assign(shopCart[index], editableData[index])
+    delete editableData[index]
+}
 
 const handle = eventManager.listenCodeScanGun((barcode) => {
     joinCart(barcode) || goodsModalRef.value.showGoodsModal(barcode)

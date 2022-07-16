@@ -13,7 +13,10 @@
                         </a-tooltip>
                     </div>
                     <div class="py-4 text-3xl text-rose-400">
-                        ￥<CountTo :value="3277.93" :fixed="2" />
+                        ￥<CountTo
+                            :value="totalAggregation.salesPrice"
+                            :fixed="2"
+                        />
                     </div>
                     <div class="py-3 flex justify-between">
                         <span>
@@ -41,7 +44,7 @@
                         </a-tooltip>
                     </div>
                     <div class="py-4 text-3xl">
-                        <CountTo :value="13203" />
+                        <CountTo :value="totalAggregation.salesCount" />
                     </div>
                     <div class="">
                         <SalesCount class="w-full h-45px" />
@@ -62,7 +65,7 @@
                         </a-tooltip>
                     </div>
                     <div class="py-4 text-3xl">
-                        <CountTo :value="463" />
+                        <CountTo :value="totalAggregation.payCount" />
                     </div>
                     <div class="">
                         <PayCount class="w-full h-45px" />
@@ -111,44 +114,56 @@
 
             <template #extra>
                 <a-radio-group
-                    v-model:value="dimension"
+                    v-model:value="timeDimension"
                     option-type="button"
                     :options="options"
+                    @change="calcAggregation"
                     size="small"
                 />
                 <a-range-picker
                     v-model:value="timeRange"
                     format="YYYY/MM/DD"
                     class="ml-5"
+                    @change="calcAggregation"
+                    valueFormat="YYYY-MM-DD hh:mm:ss"
                 />
             </template>
 
             <a-row :gutter="4">
                 <a-col class="gutter-row" :span="17">
                     <div class="gutter-box">
-                        <SalesAmount class="w-full h-300px" />
+                        <SalesAmount 
+                            class="w-full h-300px" 
+                            :data-source="timesAggregation"
+                            :dimension="timeDimension"
+                            :target="salesDimension"
+                        />
                     </div>
                 </a-col>
                 <a-col class="gutter-row" :span="7">
                     <div class="gutter-box">
                         <a-list
                             size="small"
-                            :data-source="salesRank"
+                            :data-source="rankCollection.salesPriceRank"
                             class="h-300px overflow-y-scroll"
                         >
                             <template #renderItem="{ item, index }">
                                 <a-list-item class="flex justify-between">
-                                    <span>
+                                    <div class="truncate w-4/5">
                                         <span
                                             ><a-badge
                                                 :count="index + 1"
                                                 show-zero
                                                 class="mr-3"
-                                                :number-style="getRankStyle(index)"
+                                                :number-style="
+                                                    getRankStyle(index)
+                                                "
                                         /></span>
-                                        <span>{{ item.name }}</span>
-                                    </span>
-                                    <span>{{ item.price }}</span>
+                                        <span>{{
+                                            goodsStore[item.key].sName
+                                        }}</span>
+                                    </div>
+                                    <span>{{ item.value }}</span>
                                 </a-list-item>
                             </template>
                         </a-list>
@@ -165,11 +180,26 @@
                     class="hover:shadow cursor-pointer"
                 >
                     <a-table
-                        :dataSource="dataSource"
+                        :dataSource="rankCollection.salesCountRank"
                         :columns="columns"
                         size="small"
                         :scroll="{ y: 105 }"
-                    />
+                    >
+                        <template #bodyCell="{ column, record, index }">
+                            <template v-if="column.key === 'rank'">{{
+                                index + 1
+                            }}</template>
+                            <template v-if="column.key === 'key'">
+                                <a-tooltip
+                                    :title="goodsStore[record.key].sName"
+                                >
+                                    <div class="truncate">
+                                        {{ goodsStore[record.key].sName }}
+                                    </div>
+                                </a-tooltip>
+                            </template>
+                        </template>
+                    </a-table>
                 </a-card>
             </a-col>
             <a-col class="gutter-row" :span="12">
@@ -186,68 +216,84 @@
 </template>
 
 <script setup>
-import { onActivated, onMounted, reactive, ref } from "@vue/runtime-core"
+import {
+    onActivated,
+    onBeforeMount,
+    onMounted,
+    reactive,
+    ref,
+} from "@vue/runtime-core"
 import CountTo from "./components/CountTo.vue"
-import useOrder from "./hooks/useOrder"
+import useOrder from "~/hooks/useOrder"
+import useNotice from "~/hooks/useNotice"
+import useStatistic from "~/hooks/useStatistic"
 import PayCount from "~/pages/charts/PayCount.vue"
 import SalesCount from "~/pages/charts/SalesCount.vue"
 import SalesAmount from "~/pages/charts/SalesAmount.vue"
-import SalesCountBar from "~/pages/charts/SalesCountBar.vue"
 import EarnRate from "./charts/EarnRate.vue"
 import PaywayPie from "./charts/PaywayPie.vue"
-
+import store, { STA_THEME } from "../config/store"
 import {
     CaretDownFilled,
     CaretUpFilled,
     InfoCircleOutlined,
 } from "@ant-design/icons-vue"
-import store, { STA_THEME } from "../config/store"
-const { orderList } = useOrder()
+import moment from "moment"
+import { p } from "@antfu/utils"
+
+const { openNotice } = useNotice()
+const { orders } = useOrder()
+const {
+    salesDimension,
+    timeDimension,
+    timeRange,
+    goodsStore,
+    totalAggregation,
+    timesAggregation,
+    rankCollection,
+    calcAggregation,
+} = useStatistic(orders)
+
+onBeforeMount(calcAggregation)
+onActivated(calcAggregation)
+
 const options = [
-    { label: "今日", value: "day" },
-    { label: "本周", value: "week" },
-    { label: "本月", value: "month" },
-    { label: "今年", value: "year" },
-]
-const salesDimension = ref("salesPrice")
-const dimension = ref("day")
-const timeRange = ref([])
-const salesRank = [
-    { name: "可口可乐250ml", price: 3273.32 },
-    { name: "金色好日子", price: 3272.32 },
-    { name: "芙蓉王", price: 3271.32 },
-    { name: "可口可乐250ml", price: 3271.32 },
-    { name: "可口可乐250ml", price: 3271.32 },
-    { name: "可口可乐250ml", price: 3271.32 },
-    { name: "可口可乐250ml", price: 3271.32 },
+    { label: "日", value: "day" },
+    { label: "周", value: "week" },
+    { label: "月", value: "month" },
+    { label: "年", value: "year" },
 ]
 
-const getRankStyle = (index) => 
-    store.state.STA_THEME === 'dark'
-        ? {backgroundColor: index < 3 ? "#2c3e4e" : "#262626"}
-        : {backgroundColor: index < 3 ? "orange" : "gray"}
-    
+const getRankStyle = (index) =>
+    store.state.STA_THEME === "dark"
+        ? { backgroundColor: index < 3 ? "#2c3e4e" : "#262626" }
+        : { backgroundColor: index < 3 ? "orange" : "gray" }
 
 const columns = [
     {
-        title: "排名",
+        title: "#",
         dataIndex: "rank",
         key: "rank",
+        width: 40,
     },
     {
         title: "商品名称",
         dataIndex: "name",
-        key: "name",
+        key: "key",
+        width: 290,
     },
     {
-        title: "销售数量",
-        dataIndex: "count",
-        key: "count",
+        title: "销售数",
+        dataIndex: "value",
+        key: "value",
+        align: "right",
     },
     {
         title: "周涨幅",
         dataIndex: "rate",
         key: "rate",
+        align: "right",
+        width: 60,
     },
 ]
 
@@ -259,6 +305,8 @@ const dataSource = [
     { name: "王老吉凉茶", count: 372, rate: "32%", rank: 5 },
     { name: "王老吉凉茶", count: 372, rate: "32%", rank: 6 },
 ]
+
+openNotice()
 </script>
 
 <script></script>

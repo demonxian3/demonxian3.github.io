@@ -7,7 +7,7 @@ import Jumbotron from "~/pages/Jumbotron.vue"
 import NotFound from "~/pages/NotFound.vue"
 import Layout from "~/pages/Layout.vue"
 import Home from "~/pages/Home.vue"
-import useNotice from '../pages/hooks/useNotice'
+import useNotice from '~/hooks/useNotice'
 
 export const defaultRoute = "goods"
 const { openNotice } = useNotice()

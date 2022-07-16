@@ -82,8 +82,8 @@ import {
 } from "vue"
 import GoodsModalVue from "./components/GoodsModal.vue"
 import create from "@ant-design/icons-vue/lib/components/IconFont"
-import useGoods from "~/pages/hooks/useGoods.js"
-import useEvent from "~/pages/hooks/useEvent.js"
+import useGoods from "~/hooks/useGoods.js"
+import useEvent from "~/hooks/useEvent.js"
 let {
     filter,
     goodsList,

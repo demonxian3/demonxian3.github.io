@@ -3,54 +3,65 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "@vue/runtime-core"
+import { onMounted, ref, watch, reactive } from "@vue/runtime-core"
 import * as echarts from "echarts"
 import { useResizeObserver } from "@vueuse/core"
+
+const props = defineProps({
+    dataSource: { type: Object, required: true },
+    dimension: { type: String, default: "day" },
+    target: { type: String, default: "salesPrice" },
+})
+
 let myChart = null
 const el = ref(null)
-const getData = async () => {
-    return JSON.parse('[["07-24","07-23","07-22","07-21","07-20","07-19","07-18"],[3,0,1,1,0,2,1]]')
-}
+
+const options = reactive({
+    xAxis: {
+        data: [],
+        type: "category",
+    },
+    yAxis: {
+        type: "value",
+        boundaryGap: ["0%", "20%"],
+    },
+    tooltip: {
+        trigger: "axis",
+        axisPointer: {
+            type: "shadow",
+        },
+    },
+    series: [
+        {
+            data: [],
+            type: "bar",
+        },
+    ],
+})
 
 useResizeObserver(el, (entries) => {
     myChart.resize()
 })
 
-onMounted(async () => {
-    let [date, data] = await getData()
+const renderChart = (dataSource, target, dimension) => {
+    let xData = Object.keys(dataSource[target][dimension]).map((i) => +i + 1)
+    if (dimension === "week") {
+        xData = ["日", "一", "二", "三", "四", "五", "六"]
+    }
+
+    options.xAxis.data = xData
+    options.series[0].data = Object.values(dataSource[target][dimension])
+    myChart.setOption(options)
+}
+
+onMounted(() => {
     myChart = echarts.init(document.getElementById("salesAmount"))
-    myChart.setOption({
-        xAxis: {
-            data: date,
-            type: "category",
-        },
-        yAxis: {
-            type: "value",
-            boundaryGap: ['0%', '20%']
-        },
-        series: [
-            {
-                data,
-                type: "bar",
-                // symbol: "none",
-                // sampling: "lttb",
-                // itemStyle: {
-                //     color: "red",
-                // },
-                // areaStyle: {
-                //     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                //         {
-                //             offset: 0,
-                //             color: "rgb(255, 158, 68)",
-                //         },
-                //         {
-                //             offset: 1,
-                //             color: "rgb(255, 70, 131)",
-                //         },
-                //     ]),
-                // },
-            },
-        ],
+    const { dataSource, target, dimension } = props
+    renderChart(dataSource, target, dimension)
+
+    watch(props, () => {
+        props.dataSource &&
+            renderChart(props.dataSource, props.target, props.dimension)
     })
 })
 </script>

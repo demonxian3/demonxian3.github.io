@@ -18,7 +18,7 @@
 <script setup>
 import { ref } from "@vue/reactivity"
 import GoodsFormVue from "./GoodsForm.vue"
-import useGoods from "../hooks/useGoods"
+import useGoods from "~/hooks/useGoods"
 const emit = defineEmits(['save'])
 const { searchGoods } = useGoods()
 

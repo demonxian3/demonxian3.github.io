@@ -5,7 +5,6 @@ import store from "~/config/store"
 import Antd from "ant-design-vue"
 import "ant-design-vue/dist/antd.less"
 import "virtual:windi.css"
-import "default-passive-events"
 const app = createApp(App)
 app.use(store)
 app.use(router)

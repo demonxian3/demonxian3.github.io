@@ -2,6 +2,7 @@ import { message } from "ant-design-vue"
 import { reactive, ref } from "vue"
 import store, {
     STA_GOODS,
+    SET_GOODS,
     DEL_GOODSITEM,
     SET_GOODSITEM,
     GET_GOODSTYPE,
@@ -94,6 +95,23 @@ export default () => {
             "goods.js",
             "export%20default%20" + localStorage.getItem(STA_GOODS),
         )
+    }
+
+    const importGoodsJson = (info) => {
+        var reader = new FileReader()
+        reader.onload = function (evt) {
+             try {
+                const text = evt.target.result
+                const goods = JSON.parse(text.substr(text.indexOf("[")))
+                store.commit(SET_GOODS, goods)
+                localStorage.setItem(STA_GOODS, JSON.stringify(goods))
+                searchGoods()
+                message.success(`${info.file.name} 导入成功`)
+             } catch (e) {
+                 message.error(`${info.file.name} 导入失败: `+e)
+             }
+        }
+        reader.readAsText(info.file)
     }
 
     const queryBarcode = async (barcode) => {
@@ -195,5 +213,6 @@ export default () => {
         queryBarcode,
         getGoodsType,
         exportGoodsJson,
+        importGoodsJson,
     }
 }

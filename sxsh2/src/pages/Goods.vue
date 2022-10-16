@@ -25,8 +25,16 @@
         />
 
         <a-space class="float-right">
+            <a-upload
+                :beforeUpload="()=>false"
+                name="file"
+                @change="importGoodsJson"
+                :showUploadList="false"
+            >
+                <a-button type="danger" class="!text-white" >导入</a-button>
+            </a-upload>
             <a-button type="primary" @click="exportGoodsJson()">导出</a-button>
-            <a-button type="primary" @click="goodsModalRef.showGoodsModal()"
+            <a-button class="!bg-green-500 !text-white" @click="goodsModalRef.showGoodsModal()"
                 >新增</a-button
             >
         </a-space>
@@ -91,8 +99,9 @@ let {
     searchGoods,
     getGoodsType,
     exportGoodsJson,
+    importGoodsJson,
 } = useGoods()
-
+const fileList = ref([])
 const goodsModalRef = ref(null)
 const columns = [
     {
